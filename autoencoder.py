@@ -113,7 +113,8 @@ def train_model(train_data, val_data, model, nbr_epochs, batch_size):
         epochs=nbr_epochs,
         batch_size=batch_size,
         shuffle=True,
-        validation_data=val_data
+        validation_data=val_data,
+        workers=-1 #use all the processors
     )
     return history
 
@@ -213,7 +214,7 @@ print("Test images loaded in val data : ")
 display_data_set(val_data)
 if train_or_not=="y":
     print("Creation of the model and print the summary : ")
-    autoencoder=create_modele((218,178,3),32)
+    autoencoder=create_modele((218,178,3),20)
     history=train_model(train_data, val_data, autoencoder, 3, 20)
     autoencoder.save("autoencoder_model.keras")
     visualize_prediction(val_data[0][0], autoencoder, train=False)
