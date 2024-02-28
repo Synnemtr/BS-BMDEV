@@ -153,7 +153,7 @@ def visualize_prediction(data_batch, model, train):
         plt.axis('off')
     plt.show()
 
-def load_model(model_path, encoder_layer, decoder_layers):
+def load_autoencoder_model(model_path, encoder_layer, decoder_layers):
     """
     load the encoder and the decoder from an saved autoencoder
 
@@ -169,9 +169,30 @@ def load_model(model_path, encoder_layer, decoder_layers):
     """
     autoencoder_loaded=load_model(model_path)
     encoder=Model(inputs=autoencoder_loaded.inputs, outputs=autoencoder_loaded.get_layer(encoder_layer).output)
-    decoder=Model(inputs=autoencoder_loaded.get_layer(decoder_layers[0].input, outputs=autoencoder_loaded.get_layer(decoder_layers[1]).output))
+    decoder=Model(inputs=autoencoder_loaded.get_layer(decoder_layers[0]).input, outputs=autoencoder_loaded.get_layer(decoder_layers[1]).output)
     return autoencoder_loaded, encoder, decoder
 
+def test_encoder_decoder(data_batch, encoder, decoder):
+    """
+    Visualize the results of predictions using encoder and decoder separatly
+
+    Parameters :
+        data_batch (Numpy Array) = one batch of a data set
+        encoder = the encoder part of the model
+        decoder =the decoder part of the model
+    """
+    encoded_data=encoder.predict(data_batch)
+    decoded_data=decoder.predict(encoded_data)
+    for i in range (8):
+        plt.subplot(4,4 ,i*2+1)
+        plt.imshow(data_batch[i])
+        plt.title("Image")
+        plt.axis('off')
+        plt.subplot(4,4,i*2+2)
+        plt.imshow(decoded_data[i])
+        plt.title("Predicted")
+        plt.axis("off")
+    plt.show()
 
 """====Tests===="""
 print("Proceed to split data :")
@@ -183,8 +204,11 @@ print('Datatype of train data : ', type(train_data))
 print("Test images loaded in val data : ")
 display_data_set(val_data)
 print("Creation of the model and print the summary : ")
-autoencoder=create_modele((218,178,3),32)
-train_model(train_data, val_data, autoencoder, 3, 20)
-visualize_prediction(val_data[0], autoencoder, train=False)
-autoencoder.save("autoencoder_model.keras")
-autoencoder_loaded, encoder, decoder=load_model("autoencoder_model.keras")
+# autoencoder=create_modele((218,178,3),32)
+# train_model(train_data, val_data, autoencoder, 3, 20)
+# autoencoder.save("autoencoder_model.keras")
+# visualize_prediction(val_data[0][0], autoencoder, train=False)
+autoencoder_loaded, encoder, decoder=load_autoencoder_model("autoencoder_model.keras", "max_pooling2d_1",["conv2d_transpose","conv2d_2"] )
+decoder.summary()
+visualize_prediction(val_data[0][0], autoencoder_loaded, train=False)
+test_encoder_decoder(val_data[0][0], encoder, decoder)
