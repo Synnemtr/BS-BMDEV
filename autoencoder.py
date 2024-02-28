@@ -125,6 +125,34 @@ def train_model(train_data, val_data, model, nbr_epochs, batch_size):
         validation_data=val_data
     )
 
+def visualize_prediction(data_batch, model, train):
+    """
+    Visualize the 8 first results of the model prediction on one batch
+        
+    Parameters :
+        data_batch (NumPy array) = one batch of a data set
+        model = the model use to predict
+        train (bool) = True if its a batch from a train set /
+    False if it's from a validation set
+
+    """
+    pred_batch=model.predict(data_batch)
+    fig,ax=plt.subplots(4,4,figsize=(20,8))
+    if train:
+        plt.suptitle("Model Evaluation on Train Data", size=18)
+    else:
+        plt.suptitle("Model Evaluation on Validation Data", size=18)
+    for i in range (8):
+        plt.subplot(4,4,i*2+1)
+        plt.imshow(data_batch[i])
+        plt.title("Image")
+        plt.axis('off')
+        plt.subplot(4,4,i*2+2)
+        plt.imshow(pred_batch[i])
+        plt.title("Predicted")
+        plt.axis('off')
+    plt.show()
+
 
 """====Tests===="""
 print("Proceed to split data :")
@@ -138,3 +166,4 @@ display_data_set(val_data)
 print("Creation of the model and print the summary : ")
 autoencoder=create_modele((218,178,3),32)
 train_model(train_data, val_data, autoencoder, 3, 20)
+visualize_prediction(val_data[0], autoencoder, train=False)
