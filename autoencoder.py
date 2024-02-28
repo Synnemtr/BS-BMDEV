@@ -104,14 +104,18 @@ def train_model(train_data, val_data, model, nbr_epochs, batch_size):
         model = the compiled model
         nrb_epochs = number of epochs
         batch_size = size of the batch 
+    
+    Return: 
+        history : history of the model training
     """
-    model.fit(
+    history=model.fit(
         train_data,
         epochs=nbr_epochs,
         batch_size=batch_size,
         shuffle=True,
         validation_data=val_data
     )
+    return history
 
 def visualize_prediction(data_batch, model, train):
     """
@@ -182,6 +186,22 @@ def test_encoder_decoder(data_batch, encoder, decoder):
         plt.axis("off")
     plt.show()
 
+def plot_loss(history):
+    """
+    Plot the loss of the model
+
+    Parameters:
+        history = history of the model training
+    """
+    plt.plot(history.history["loss"], label='train')
+    plt.plot(history.history['val_loss'], label='Validatiion')
+    plt.title('Loss of the model')
+    plt.xlabel("epochs")
+    plt.ylabel("loss")
+    plt.legend()
+    plt.show()
+
+
 """====Main===="""
 train_or_not=input("Do you want to train a new model [y/n] : ")
 print("Proceed to split data :")
@@ -189,15 +209,15 @@ folder="./data/small_set"
 train_data, val_data=split_data(folder, seed_nb=40)
 print("Test images loaded in train data : ")
 display_data_set(train_data)
-print('Datatype of train data : ', type(train_data))
 print("Test images loaded in val data : ")
 display_data_set(val_data)
 if train_or_not=="y":
     print("Creation of the model and print the summary : ")
     autoencoder=create_modele((218,178,3),32)
-    train_model(train_data, val_data, autoencoder, 3, 20)
+    history=train_model(train_data, val_data, autoencoder, 3, 20)
     autoencoder.save("autoencoder_model.keras")
     visualize_prediction(val_data[0][0], autoencoder, train=False)
+    plot_loss(history)
 else :
     autoencoder_loaded, encoder, decoder=load_autoencoder_model("autoencoder_model.keras", "max_pooling2d_1",["conv2d_transpose","conv2d_2"] )
     decoder.summary()
