@@ -75,6 +75,38 @@ def display_data_set(data):
         plt.show()
         break
 
+def create_modele(shape, batch_size):
+    """
+    Create the layers of the model, compile it and print the resume
+
+    Parameters :
+        shape (tuples): shape of the inputs
+        batch_size (int) : size of batch
+
+    Return:
+        autoencoder : the untrain model
+
+    """
+    input=layers.Input(shape=shape, batch_size=batch_size)
+
+    # Encoder
+    encoder = layers.Conv2D(32, (3, 3), activation="relu", padding="same")(input)
+    encoder  = layers.MaxPooling2D((2, 2), padding="same")(encoder)
+    encoder = layers.Conv2D(32, (3, 3), activation="relu", padding="same")(encoder)
+    encoder = layers.MaxPooling2D((2, 2), padding="same")(encoder)
+
+    # Decoder
+    decoder = layers.Conv2DTranspose(32, (3, 3), strides=2, activation="relu", padding="same")(encoder)
+    decoder = layers.Conv2DTranspose(32, (3, 3), strides=2, activation="relu", padding="same")(decoder)
+    decoder = layers.Conv2D(3, (3, 3), activation="sigmoid", padding="valid")(decoder)
+
+    # Autoencoder
+    autoencoder = Model(input, decoder)
+    autoencoder.compile(optimizer="adam", loss="mean_squared_error")
+    autoencoder.summary()
+    return autoencoder
+
+
 """====Tests===="""
 print("Proceed to split data :")
 folder="./data/small_set"
@@ -84,3 +116,5 @@ display_data_set(train_data)
 print('Datatype of train data : ', type(train_data))
 print("Test images loaded in val data : ")
 display_data_set(val_data)
+print("Creation of the model and print the summary : ")
+autoencoder=create_modele((218,178,3),32)
