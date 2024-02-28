@@ -1,20 +1,8 @@
 """"======Modules======="""
 import matplotlib.pyplot as plt
-import numpy as np
-import os
-import tensorflow as tf
-from tensorflow import keras
-from keras.preprocessing.image import ImageDataGenerator
-from tensorflow.keras.layers import (
-    Input , Conv2D , Conv2DTranspose , MaxPooling2D , UpSampling2D   # model layers
-)
-from tensorflow.keras.models import Model                            # functional model
-from tensorflow.keras.losses import MeanSquaredError                 # loss metric
-from tensorflow.keras.optimizers import Adam 
+from keras.preprocessing.image import ImageDataGenerator                           # functional model
 from keras import layers
-from keras.datasets import mnist
 from keras.models import Model, load_model
-import scipy
 
 """====Functions===="""
 def split_data(im_fold, seed_nb):
@@ -204,10 +192,10 @@ print('Datatype of train data : ', type(train_data))
 print("Test images loaded in val data : ")
 display_data_set(val_data)
 print("Creation of the model and print the summary : ")
-# autoencoder=create_modele((218,178,3),32)
-# train_model(train_data, val_data, autoencoder, 3, 20)
-# autoencoder.save("autoencoder_model.keras")
-# visualize_prediction(val_data[0][0], autoencoder, train=False)
+autoencoder=create_modele((218,178,3),32)
+train_model(train_data, val_data, autoencoder, 3, 20)
+autoencoder.save("autoencoder_model.keras")
+visualize_prediction(val_data[0][0], autoencoder, train=False)
 autoencoder_loaded, encoder, decoder=load_autoencoder_model("autoencoder_model.keras", "max_pooling2d_1",["conv2d_transpose","conv2d_2"] )
 decoder.summary()
 visualize_prediction(val_data[0][0], autoencoder_loaded, train=False)
