@@ -106,6 +106,25 @@ def create_modele(shape, batch_size):
     autoencoder.summary()
     return autoencoder
 
+def train_model(train_data, val_data, model, nbr_epochs, batch_size):
+    """
+    Train the model on a train set
+
+    Parameters :
+        train_data = set of data to be train
+        val_data = set of data use to validate the model
+        model = the compiled model
+        nrb_epochs = number of epochs
+        batch_size = size of the batch 
+    """
+    model.fit(
+        train_data,
+        epochs=nbr_epochs,
+        batch_size=batch_size,
+        shuffle=True,
+        validation_data=val_data
+    )
+
 
 """====Tests===="""
 print("Proceed to split data :")
@@ -118,3 +137,4 @@ print("Test images loaded in val data : ")
 display_data_set(val_data)
 print("Creation of the model and print the summary : ")
 autoencoder=create_modele((218,178,3),32)
+train_model(train_data, val_data, autoencoder, 3, 20)
