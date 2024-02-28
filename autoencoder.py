@@ -182,7 +182,8 @@ def test_encoder_decoder(data_batch, encoder, decoder):
         plt.axis("off")
     plt.show()
 
-"""====Tests===="""
+"""====Main===="""
+train_or_not=input("Do you want to train a new model [y/n] : ")
 print("Proceed to split data :")
 folder="./data/small_set"
 train_data, val_data=split_data(folder, seed_nb=40)
@@ -191,12 +192,14 @@ display_data_set(train_data)
 print('Datatype of train data : ', type(train_data))
 print("Test images loaded in val data : ")
 display_data_set(val_data)
-print("Creation of the model and print the summary : ")
-autoencoder=create_modele((218,178,3),32)
-train_model(train_data, val_data, autoencoder, 3, 20)
-autoencoder.save("autoencoder_model.keras")
-visualize_prediction(val_data[0][0], autoencoder, train=False)
-autoencoder_loaded, encoder, decoder=load_autoencoder_model("autoencoder_model.keras", "max_pooling2d_1",["conv2d_transpose","conv2d_2"] )
-decoder.summary()
-visualize_prediction(val_data[0][0], autoencoder_loaded, train=False)
-test_encoder_decoder(val_data[0][0], encoder, decoder)
+if train_or_not=="y":
+    print("Creation of the model and print the summary : ")
+    autoencoder=create_modele((218,178,3),32)
+    train_model(train_data, val_data, autoencoder, 3, 20)
+    autoencoder.save("autoencoder_model.keras")
+    visualize_prediction(val_data[0][0], autoencoder, train=False)
+else :
+    autoencoder_loaded, encoder, decoder=load_autoencoder_model("autoencoder_model.keras", "max_pooling2d_1",["conv2d_transpose","conv2d_2"] )
+    decoder.summary()
+    visualize_prediction(val_data[0][0], autoencoder_loaded, train=False)
+    test_encoder_decoder(val_data[0][0], encoder, decoder)
