@@ -153,6 +153,25 @@ def visualize_prediction(data_batch, model, train):
         plt.axis('off')
     plt.show()
 
+def load_model(model_path, encoder_layer, decoder_layers):
+    """
+    load the encoder and the decoder from an saved autoencoder
+
+    Parameters:
+        model_path (str) = path to the model file
+        encoder_layer (str) = name of the last layer of the encoder
+        decoder_layers (2-lists of str) = name of the first and last layers of the decoder
+
+    Return :
+        autoencoder_loaded = the full autoencoder model
+        encoder = the encoder part of the autoencoder model
+        decoder = the decoder part of the autoencoder model
+    """
+    autoencoder_loaded=load_model(model_path)
+    encoder=Model(inputs=autoencoder_loaded.inputs, outputs=autoencoder_loaded.get_layer(encoder_layer).output)
+    decoder=Model(inputs=autoencoder_loaded.get_layer(decoder_layers[0].input, outputs=autoencoder_loaded.get_layer(decoder_layers[1]).output))
+    return autoencoder_loaded, encoder, decoder
+
 
 """====Tests===="""
 print("Proceed to split data :")
@@ -167,3 +186,5 @@ print("Creation of the model and print the summary : ")
 autoencoder=create_modele((218,178,3),32)
 train_model(train_data, val_data, autoencoder, 3, 20)
 visualize_prediction(val_data[0], autoencoder, train=False)
+autoencoder.save("autoencoder_model.keras")
+autoencoder_loaded, encoder, decoder=load_model("autoencoder_model.keras")
