@@ -13,7 +13,7 @@ def train_autoencoder(train_data, val_data):
     autoencoder=create_modele((218,178,3),20)
     history=train_model(train_data, val_data, autoencoder, 3, 20)
     autoencoder.save("autoencoder_model.keras")
-    # visualize_prediction(val_data[0][0], autoencoder, train=False)
+    visualize_prediction(val_data[0][0], autoencoder, train=False)
     plot_loss(history)
 
 # Initialize population with random genomes
@@ -24,7 +24,7 @@ def population_initiation(image_folder, population_size):
 
     population_images = []
     plt.figure(figsize=(10, 10))
-    for i,image_file in enumerate(population_files):
+    for i, image_file in enumerate(population_files):
         img = Image.open(os.path.join(folder, image_file))
         population_images.append(np.array(img))
 
@@ -36,6 +36,7 @@ def get_victim_choice(images):
         print("Choose the image(s) that most resemble the attacker (or type 'quit' to exit): ")
         for i, img in enumerate(images):
             plt.subplot(2, 2, i + 1)
+            img = np.squeeze(img)
             plt.imshow(img)
             plt.axis("off")
             plt.title(f"Image {i + 1}")
@@ -59,26 +60,26 @@ def get_victim_choice(images):
 
         return choice
 
-# Display images
-def display_images(images):
-    fig, axes = plt.subplots(1, len(images), figsize=(10, 10))
+# Display image vectors
+def display_image_vectors(images):
     for i, img in enumerate(images):
-        axes[i].imshow(img)
-        axes[i].axis("off")
-    plt.show()
+        img = np.squeeze(img)
+        print(f"Image {i + 1}: ")
+        print(img)
 
 # Identify the attacker using genetic algorithm and the autoencoder's encoder and decoder layer's
 def idenfity_attacker(encoder, decoder, population_size, max_iterations, mutation_rate):
     population = population_initiation(folder, population_size)  # init random population
-
+    
     for i in range(max_iterations):
         victim_choice = get_victim_choice(population)
         encode_victim_choice = [encoder.predict(image.reshape(1, 218, 178, 3)) for image in victim_choice] #(batch size, height, width, channels)
-        new_population = genetic_algorithm(decoder, population, encode_victim_choice, population_size, mutation_rate)
-        decoded_new_population = [decoder.predict(image.reshape(1, 10)) for image in new_population]
-        display_images(decoded_new_population)
-        population = new_population
-        print(f"Iteration {i + 1}, Population: {population} \n")
+        encode_population = [encoder.predict(image.reshape(1, 218, 178, 3)) for image in population]
+        new_population = genetic_algorithm(decoder, encode_population, encode_victim_choice, population_size, mutation_rate)
+        decoded_new_population = [decoder.predict(image.reshape(1, 55, 45, 32)) for image in new_population]
+        # display_image_vectors(decoded_new_population)
+        population = decoded_new_population
+        print(f"Iteration {i + 1} \n")
 
 
 # Main function to run the program
@@ -87,10 +88,10 @@ if __name__ == "__main__":
     print("Proceed to split data :")
     folder="./data/small_set"
     train_data, val_data=split_data(folder, seed_nb=40)
-    # print("Test images loaded in train data : ")
-    # display_data_set(train_data)
-    # print("Test images loaded in val data : ")
-    # display_data_set(val_data)
+    print("Test images loaded in train data : ")
+    display_data_set(train_data)
+    print("Test images loaded in val data : ")
+    display_data_set(val_data)
 
     if train_or_not=="y":
         train_autoencoder(train_data, val_data)
@@ -98,7 +99,8 @@ if __name__ == "__main__":
         population_size = 4
         max_iterations = 10
         mutation_rate = 0.1
-        autoencoder_loaded, encoder, decoder = load_autoencoder_model("autoencoder_model.keras", "encoder_input", ["encoder_output", "decoder_output"]) # load autoencoder
+        autoencoder_loaded, encoder, decoder=load_autoencoder_model("autoencoder_model.keras", "max_pooling2d_1",["conv2d_transpose","conv2d_2"] )
+        encoder.summary()
         decoder.summary()
         idenfity_attacker(encoder, decoder, population_size, max_iterations, mutation_rate)
         # visualize_prediction(val_data[0][0], autoencoder_loaded, train=False)

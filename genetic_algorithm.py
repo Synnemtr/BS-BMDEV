@@ -2,23 +2,32 @@ import numpy as np
 import matplotlib.pyplot as plt
 import random
 
-# Evaluate the fitness of the encoded images
-def fitness_evaluation(decoder, population, target_images):
+# Use autoencoder to decode the genomes
+def decode_genome(decoder, genome):
+    decoded_image = decoder.predict(genome)
+    return decoded_image
+
+# Evaluate the fitness of the decoded images
+def fitness_evaluation(decoder, encoded_population, encoded_target_images):
     fitness_values = []
-    for genome in population:
-        decoded_genome = decoder.predict(genome.reshape(1, *decoder.input_shape[1:]))
-        fitnesses = [calculate_fitness(decoded_genome, target_image) for target_image in target_images]
+    for genome in encoded_target_images:
+        # TODO: compare decoded population and target images?
+        # decoded_genome = decode_genome(decoder, genome)
+        fitnesses = [calculate_fitness(genome, original_image) for original_image in encoded_population]
         fitness = max(fitnesses)
         fitness_values.append(fitness)
     return np.array(fitness_values)
 
-# Calculate the fitness of the encoded images
-def calculate_fitness(decoded_image, target_image):
-    decoded_flat = decoded_image.flatten()
-    target_flat = target_image.flatten()
-    mean = np.mean((decoded_flat - target_flat)**2)
-    fitness = 1 / (1 + mean)
-    return fitness
+# Calculate the fitness of the decoded images
+def calculate_fitness(decoded_target_image, original_image):
+    fitness_values = []
+    for target_vector, original_vector in zip(decoded_target_image, original_image):
+        target_flat = target_vector.flatten()
+        original_flat = original_vector.flatten()
+        mean = np.mean((original_flat - target_flat)**2)
+        fitness = 1 / (1 + mean)
+        fitness_values.append(fitness)
+    return np.mean(fitness_values)
 
 # Select the best genomes based on fitness score
 def select_parents(population, fitness_scores):
@@ -59,8 +68,9 @@ def genetic_algorithm(decoder, population, victim_choice, population_size, mutat
     fitness_scores = fitness_evaluation(decoder, population, victim_choice)
     parents = select_parents(population, fitness_scores)
     new_population = generate_new_population(parents, population_size, mutation_rate)
-    return new_population
-        
+
     # lowest_fitness_score_genome = population[np.argmin(fitness_scores)]
     # decoded_image = decode_genome(autoencoder, lowest_fitness_score_genome)
     # print(f"Iteration {i + 1}, Best image: {decoded_image} \n")
+
+    return new_population

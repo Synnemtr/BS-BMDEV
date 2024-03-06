@@ -75,18 +75,20 @@ def create_modele(shape, batch_size):
         autoencoder : the untrain model
 
     """
-    input=layers.Input(shape=shape, batch_size=batch_size, name="encoder_input")
+    input=layers.Input(shape=shape, batch_size=batch_size)
+
+    # TODO: give names to layers for easier access and static use
 
     # Encoder
     encoder = layers.Conv2D(32, (3, 3), activation="relu", padding="same")(input)
     encoder  = layers.MaxPooling2D((2, 2), padding="same")(encoder)
     encoder = layers.Conv2D(32, (3, 3), activation="relu", padding="same")(encoder)
-    encoder = layers.MaxPooling2D((2, 2), padding="same", name='encoder_output')(encoder)
+    encoder = layers.MaxPooling2D((2, 2), padding="same")(encoder)
 
     # Decoder
     decoder = layers.Conv2DTranspose(32, (3, 3), strides=2, activation="relu", padding="same")(encoder)
     decoder = layers.Conv2DTranspose(32, (3, 3), strides=2, activation="relu", padding="same")(decoder)
-    decoder = layers.Conv2D(3, (3, 3), activation="sigmoid", padding="valid", name='decoder_output')(decoder)
+    decoder = layers.Conv2D(3, (3, 3), activation="sigmoid", padding="valid")(decoder)
 
     # Autoencoder
     autoencoder = Model(input, decoder)
