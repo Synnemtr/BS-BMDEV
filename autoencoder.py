@@ -3,9 +3,10 @@ import matplotlib.pyplot as plt
 from keras.preprocessing.image import ImageDataGenerator 
 from keras import layers
 from keras.models import Model, load_model
+from keras import backend as K
 
 """====Functions===="""
-def split_data(im_fold, seed_nb):
+def split_data(im_fold, seed_nb, image_size):
     """
     Proceed to the splitting of the data in a train set and a validation set
 
@@ -19,7 +20,6 @@ def split_data(im_fold, seed_nb):
     """
     train_augment=ImageDataGenerator(
         rescale=1./255,
-        horizontal_flip=True,
         zoom_range=0.1,
         shear_range=0.1,
         validation_split=0.2,
@@ -30,7 +30,7 @@ def split_data(im_fold, seed_nb):
     )
     train_data=train_augment.flow_from_directory(
         im_fold,
-        target_size=(218,178),
+        target_size=image_size,
         batch_size=20,
         subset='training',
         class_mode='input',
@@ -38,7 +38,7 @@ def split_data(im_fold, seed_nb):
     )
     val_data=val_augment.flow_from_directory(
         im_fold,
-        target_size=(218,178),
+        target_size=image_size,
         batch_size=20,
         subset='validation',
         class_mode='input',
@@ -62,6 +62,13 @@ def display_data_set(data):
             plt.axis("off")
         plt.show()
         break
+
+@tf.function
+def sampling(args):
+    z_mean, z_log_var = args
+    epsilon = K.random_normal(shape=(K.shape(z_mean)[0], 300))
+    return z_mean + K.exp(z_log_var / 2) * epsilon
+
 
 def create_modele(shape, batch_size):
     """
@@ -208,7 +215,7 @@ if __name__ == "__main__":
     train_or_not=input("Do you want to train a new model [y/n] : ")
     print("Proceed to split data :")
     folder="./data/img_align_celeba"
-    train_data, val_data=split_data(folder, seed_nb=40)
+    train_data, val_data=split_data(folder, seed_nb=40, image_size=(128,128))
     print("Test images loaded in train data : ")
     display_data_set(train_data)
     print("Test images loaded in val data : ")
