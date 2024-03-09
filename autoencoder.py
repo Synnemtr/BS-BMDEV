@@ -33,7 +33,7 @@ def split_data(im_fold, seed_nb, image_size):
     train_data=train_augment.flow_from_directory(
         im_fold,
         target_size=image_size,
-        batch_size=20,
+        batch_size=64,
         subset='training',
         class_mode='input',
         seed=seed_nb
@@ -41,7 +41,7 @@ def split_data(im_fold, seed_nb, image_size):
     val_data=val_augment.flow_from_directory(
         im_fold,
         target_size=image_size,
-        batch_size=20,
+        batch_size=64,
         subset='validation',
         class_mode='input',
         seed=seed_nb
@@ -72,6 +72,17 @@ def sampling(args):
     return z_mean + K.exp(z_log_var / 2) * epsilon
 
 def create_encoder(input_shape):
+    """
+    create the encoder model
+
+    Parameter :
+        input_shape (tuple) : size of the input given to the encoder
+    
+    Return :
+        shape_before_flattening (tuple) = size of the data before flattening
+        z = the layer z using the sampling layer
+        encoder = the encoder model
+    """
     inputs = layers.Input(shape=input_shape)
     x = layers.Conv2D(32,3,strides=2, padding='same', activation='relu')(inputs)
     x = layers.Conv2D(64,3,strides=2, padding='same', activation='relu')(x)
@@ -94,6 +105,16 @@ def create_encoder(input_shape):
     return shape_before_flattening, z, encoder
 
 def create_decoder(shape_before_flattening, z):
+    """
+    create the decoder model
+
+    Parameter :
+        shape_before_flattening (tuple) = shape of the data before flattening in the encoder
+        z = the layer using sample function
+    
+    Return :
+        decoder = the decoder model
+    """
     decoder_input = layers.Input(K.int_shape(z)[1:])
     x = layers.Dense(np.prod(shape_before_flattening[1:]), activation='relu')(decoder_input)
     x = layers.Reshape(shape_before_flattening[1:])(x)
@@ -140,7 +161,7 @@ def create_autoencoder(input_shape):
     vae.summary()
     return vae
 
-def train_model(train_data, val_data, model, nbr_epochs, steps_per_epoch):
+def train_model(train_data, val_data, model, nbr_epochs, steps_per_epoch, graph=True):
     """
     Train the model on a train set
 
@@ -148,21 +169,26 @@ def train_model(train_data, val_data, model, nbr_epochs, steps_per_epoch):
         train_data = set of data to be train
         val_data = set of data use to validate the model
         model = the compiled model
-        nrb_epochs = number of epochs
-        batch_size = size of the batch 
-    
-    Return: 
-        history : history of the model training
+        nrb_epochs (int) = number of epochs
+        steps_pet_epoch (int) = number of batch used per epochs
+        graph (boolean) = True if you want to plot the loss plot
     """
-    history=model.fit(
-        train_data,
-        epochs=nbr_epochs,
-        steps_per_epoch=steps_per_epoch,
-        shuffle=True,
-        validation_data=val_data,
-        workers=-1 #use all the processors
-    )
-    return history
+    train_loss=[]
+    val_loss=[]
+    for i in range (nbr_epochs):
+        history=model.fit(
+            train_data,
+            epochs=1,
+            steps_per_epoch=steps_per_epoch,
+            shuffle=True,
+            validation_data=val_data,
+            workers=-1 #use all the processors
+        )
+        model.save("vae_model.h5")
+        train_loss=train_loss+history.history['loss']
+        val_loss=val_loss+history.history["val_loss"]
+    if graph == True:
+        plot_loss(train_loss, val_loss)
 
 def visualize_prediction(data_batch, model, train):
     """
@@ -233,15 +259,16 @@ def test_encoder_decoder(data_batch, encoder, decoder):
         plt.axis("off")
     plt.show()
 
-def plot_loss(history):
+def plot_loss(train_loss, val_loss):
     """
     Plot the loss of the model
 
     Parameters:
-        history = history of the model training
+        train_loss (list) :  list of the loss value for the training set for each epoch
+        val_loss (list) :  list of the loss value for the validation set for each epoch
     """
-    plt.plot(history.history["loss"], label='train')
-    plt.plot(history.history['val_loss'], label='Validatiion')
+    plt.plot(train_loss, label='train')
+    plt.plot(val_loss, label='Validatiion')
     plt.title('Loss of the model')
     plt.xlabel("epochs")
     plt.ylabel("loss")
@@ -262,10 +289,8 @@ if __name__ == "__main__":
     if train_or_not=="y":
         print("Creation of the model and print the summary : ")
         autoencoder=create_autoencoder((128,128,3))
-        history=train_model(train_data, val_data, autoencoder, 2, 800)
-        autoencoder.save("vae_model.h5")
+        train_model(train_data, val_data, autoencoder, 10, 500)
         visualize_prediction(val_data[0][0], autoencoder, train=False)
-        plot_loss(history)
     else :
         autoencoder_loaded, encoder, decoder=load_autoencoder_model("autoencoder_model.keras", "max_pooling2d_1",["conv2d_transpose","conv2d_2"] )
         decoder.summary()
