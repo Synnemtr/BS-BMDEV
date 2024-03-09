@@ -184,7 +184,7 @@ def train_model(train_data, val_data, model, nbr_epochs, steps_per_epoch, graph=
             validation_data=val_data,
             workers=-1 #use all the processors
         )
-        model.save("vae_model.h5")
+        model.save("vae_model.keras")
         train_loss=train_loss+history.history['loss']
         val_loss=val_loss+history.history["val_loss"]
     if graph == True:
@@ -218,23 +218,21 @@ def visualize_prediction(data_batch, model, train):
         plt.axis('off')
     plt.show()
 
-def load_autoencoder_model(model_path, encoder_layer, decoder_layers):
+def load_autoencoder_model(model_path):
     """
     load the encoder and the decoder from an saved autoencoder
 
     Parameters:
         model_path (str) = path to the model file
-        encoder_layer (str) = name of the last layer of the encoder
-        decoder_layers (2-lists of str) = name of the first and last layers of the decoder
 
     Return :
         autoencoder_loaded = the full autoencoder model
         encoder = the encoder part of the autoencoder model
         decoder = the decoder part of the autoencoder model
     """
-    autoencoder_loaded=load_model(model_path)
-    encoder=Model(inputs=autoencoder_loaded.inputs, outputs=autoencoder_loaded.get_layer(encoder_layer).output)
-    decoder=Model(inputs=autoencoder_loaded.get_layer(decoder_layers[0]).input, outputs=autoencoder_loaded.get_layer(decoder_layers[1]).output)
+    autoencoder_loaded=load_model(model_path, custom_objects={"sampling": sampling})
+    encoder=autoencoder_loaded.get_layer("encoder")
+    decoder=autoencoder_loaded.get_layer("decoder")
     return autoencoder_loaded, encoder, decoder
 
 def test_encoder_decoder(data_batch, encoder, decoder):
@@ -247,7 +245,7 @@ def test_encoder_decoder(data_batch, encoder, decoder):
         decoder =the decoder part of the model
     """
     encoded_data=encoder.predict(data_batch)
-    decoded_data=decoder.predict(encoded_data)
+    decoded_data=decoder.predict(encoded_data[-1])
     for i in range (8):
         plt.subplot(4,4 ,i*2+1)
         plt.imshow(data_batch[i])
@@ -292,7 +290,7 @@ if __name__ == "__main__":
         train_model(train_data, val_data, autoencoder, 10, 500)
         visualize_prediction(val_data[0][0], autoencoder, train=False)
     else :
-        autoencoder_loaded, encoder, decoder=load_autoencoder_model("autoencoder_model.keras", "max_pooling2d_1",["conv2d_transpose","conv2d_2"] )
+        autoencoder_loaded, encoder, decoder=load_autoencoder_model("vae_model.keras")
         decoder.summary()
         visualize_prediction(val_data[0][0], autoencoder_loaded, train=False)
         test_encoder_decoder(val_data[0][0], encoder, decoder)
