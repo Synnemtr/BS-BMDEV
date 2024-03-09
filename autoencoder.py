@@ -4,7 +4,9 @@ from keras.preprocessing.image import ImageDataGenerator
 from keras import layers
 from keras.models import Model, load_model
 from keras import backend as K
-
+from keras.losses import mse
+import numpy as np
+import tensorflow as tf
 """====Functions===="""
 def split_data(im_fold, seed_nb, image_size):
     """
@@ -69,39 +71,76 @@ def sampling(args):
     epsilon = K.random_normal(shape=(K.shape(z_mean)[0], 300))
     return z_mean + K.exp(z_log_var / 2) * epsilon
 
+def create_encoder(input_shape):
+    inputs = layers.Input(shape=input_shape)
+    x = layers.Conv2D(32,3,strides=2, padding='same', activation='relu')(inputs)
+    x = layers.Conv2D(64,3,strides=2, padding='same', activation='relu')(x)
+    x = layers.Conv2D(64,3,strides=2, padding='same', activation='relu')(x)
+    x = layers.Conv2D(64,3,strides=2, padding='same', activation='relu')(x)
 
-def create_modele(shape, batch_size):
+    shape_before_flattening = K.int_shape(x)
+
+    x = layers.Flatten()(x)
+    x = layers.Dense(512, activation = "relu")(x)
+
+    z_mean = layers.Dense(300, name="z_mean")(x)
+    z_log_var = layers.Dense(300, name="z_log_var")(x)
+
+    z = layers.Lambda(sampling)([z_mean, z_log_var])
+
+    encoder=Model(inputs, [z_mean, z_log_var, z], name='encoder')
+    encoder.compile()
+    encoder.summary()
+    return shape_before_flattening, z, encoder
+
+def create_decoder(shape_before_flattening, z):
+    decoder_input = layers.Input(K.int_shape(z)[1:])
+    x = layers.Dense(np.prod(shape_before_flattening[1:]), activation='relu')(decoder_input)
+    x = layers.Reshape(shape_before_flattening[1:])(x)
+    x = layers.Conv2DTranspose(64, 3, strides=2, padding='same', activation="relu")(x)
+    x = layers.Conv2DTranspose(64, 3, strides=2, padding='same', activation="relu")(x)
+    x = layers.Conv2DTranspose(64, 3, strides=2, padding='same', activation="relu")(x)
+    x = layers.Conv2DTranspose(32, 3, strides=2, padding='same', activation="relu")(x)
+    outputs = layers.Conv2DTranspose(3, 3, padding='same', activation="sigmoid")(x)
+
+    decoder = Model(decoder_input, outputs, name='decoder')
+    decoder.compile()
+    decoder.summary()
+    return decoder
+
+def create_autoencoder(input_shape):
     """
     Create the layers of the model, compile it and print the resume
 
     Parameters :
-        shape (tuples): shape of the inputs
+        input_shape (tuples): shape of the inputs
         batch_size (int) : size of batch
 
     Return:
         autoencoder : the untrain model
 
     """
-    input=layers.Input(shape=shape, batch_size=batch_size)
+    shape_before_flattening, z_layer, encoder = create_encoder(input_shape)
+    decoder=create_decoder(shape_before_flattening, z_layer)
 
-    # Encoder
-    encoder = layers.Conv2D(32, (3, 3), activation="relu", padding="same")(input)
-    encoder  = layers.MaxPooling2D((2, 2), padding="same")(encoder)
-    encoder = layers.Conv2D(32, (3, 3), activation="relu", padding="same")(encoder)
-    encoder = layers.MaxPooling2D((2, 2), padding="same")(encoder)
+    inputs=layers.Input(shape=input_shape)
+    z_mean, z_log_var, z = encoder(inputs)
+    outputs=decoder(z)
+    vae=Model(inputs, outputs)
 
-    # Decoder
-    decoder = layers.Conv2DTranspose(32, (3, 3), strides=2, activation="relu", padding="same")(encoder)
-    decoder = layers.Conv2DTranspose(32, (3, 3), strides=2, activation="relu", padding="same")(decoder)
-    decoder = layers.Conv2D(3, (3, 3), activation="sigmoid", padding="valid")(decoder)
+    # Define the VAE loss function
+    reconstruction_loss = mse(K.flatten(inputs), K.flatten(outputs))
+    reconstruction_loss *= input_shape[0] * input_shape[1] * input_shape[2]
+    kl_loss = -0.5 * K.sum(1 + z_log_var - K.square(z_mean) - K.exp(z_log_var), axis=1)
+    vae_loss = K.mean( reconstruction_loss + kl_loss)
+    vae.add_loss(vae_loss)
+    vae.add_metric(kl_loss, name="kl_loss")
+    vae.add_metric(reconstruction_loss, name="reconstruction_loss")
+    vae.compile(optimizer='adam')
+    vae.summary()
+    return vae
 
-    # Autoencoder
-    autoencoder = Model(input, decoder)
-    autoencoder.compile(optimizer="adam", loss="mean_squared_error")
-    autoencoder.summary()
-    return autoencoder
-
-def train_model(train_data, val_data, model, nbr_epochs, batch_size):
+def train_model(train_data, val_data, model, nbr_epochs, steps_per_epoch):
     """
     Train the model on a train set
 
@@ -118,7 +157,7 @@ def train_model(train_data, val_data, model, nbr_epochs, batch_size):
     history=model.fit(
         train_data,
         epochs=nbr_epochs,
-        batch_size=batch_size,
+        steps_per_epoch=steps_per_epoch,
         shuffle=True,
         validation_data=val_data,
         workers=-1 #use all the processors
@@ -222,9 +261,9 @@ if __name__ == "__main__":
     display_data_set(val_data)
     if train_or_not=="y":
         print("Creation of the model and print the summary : ")
-        autoencoder=create_modele((218,178,3),20)
-        history=train_model(train_data, val_data, autoencoder, 3, 20)
-        autoencoder.save("autoencoder_model.keras")
+        autoencoder=create_autoencoder((128,128,3))
+        history=train_model(train_data, val_data, autoencoder, 2, 800)
+        autoencoder.save("vae_model.h5")
         visualize_prediction(val_data[0][0], autoencoder, train=False)
         plot_loss(history)
     else :
