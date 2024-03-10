@@ -68,11 +68,11 @@ def display_data_set(data):
 
 @tf.function
 def sampling(args):
-    z_mean, z_log_var = args
-    epsilon = K.random_normal(shape=(K.shape(z_mean)[0], 300))
+    z_mean, z_log_var= args
+    epsilon = K.random_normal(shape=(K.shape(z_mean)[0], K.shape(z_mean)[1]))
     return z_mean + K.exp(z_log_var / 2) * epsilon
 
-def create_encoder(input_shape):
+def create_encoder(input_shape, latent_dim):
     """
     create the encoder model
 
@@ -95,8 +95,8 @@ def create_encoder(input_shape):
     x = layers.Flatten()(x)
     x = layers.Dense(512, activation = "relu")(x)
 
-    z_mean = layers.Dense(300, name="z_mean")(x)
-    z_log_var = layers.Dense(300, name="z_log_var")(x)
+    z_mean = layers.Dense(latent_dim, name="z_mean")(x)
+    z_log_var = layers.Dense(latent_dim, name="z_log_var")(x)
 
     z = layers.Lambda(sampling)([z_mean, z_log_var])
 
@@ -130,7 +130,7 @@ def create_decoder(shape_before_flattening, z):
     decoder.summary()
     return decoder
 
-def create_autoencoder(input_shape):
+def create_autoencoder(input_shape, latent_dim):
     """
     Create the layers of the model, compile it and print the resume
 
@@ -142,7 +142,7 @@ def create_autoencoder(input_shape):
         autoencoder : the untrain model
 
     """
-    shape_before_flattening, z_layer, encoder = create_encoder(input_shape)
+    shape_before_flattening, z_layer, encoder = create_encoder(input_shape, latent_dim)
     decoder=create_decoder(shape_before_flattening, z_layer)
 
     inputs=layers.Input(shape=input_shape)
@@ -164,7 +164,7 @@ def create_autoencoder(input_shape):
 
 def train_model(train_data, val_data, model, nbr_epochs, steps_per_epoch, saving_name , graph=True):
     """
-    Train the model on a train set
+    Train the model on a train set and save it
 
     Parameters :
         train_data = set of data to be train
@@ -179,7 +179,7 @@ def train_model(train_data, val_data, model, nbr_epochs, steps_per_epoch, saving
     for i in range (nbr_epochs):
         history=model.fit(
             train_data,
-            epochs=2,
+            epochs=1,
             steps_per_epoch=steps_per_epoch,
             shuffle=True,
             validation_data=val_data,
@@ -291,13 +291,13 @@ if __name__ == "__main__":
         if train_new=="y":
             saving_name=input("Choose a name for the model : ")
             print("Creation of the model and print the summary : ")
-            autoencoder=create_autoencoder((128,128,3))
+            autoencoder=create_autoencoder((128,128,3), latent_dim=300)
             train_model(train_data, val_data, autoencoder, 10, 500, saving_name)
             visualize_prediction(val_data[0][0], autoencoder, train=False)
         else :
            file_name = input("Enter the model file name : ")
            autoencoder_loaded, encoder, decoder=load_autoencoder_model('model/' + file_name)
-           train_model(train_data, val_data, autoencoder_loaded, 3, 800, saving_name=file_name)
+           train_model(train_data, val_data, autoencoder_loaded, 2, 800, saving_name=file_name)
            visualize_prediction(val_data[0][0], autoencoder_loaded, train=False)
     else :
         file_name = input("Enter the model file name : ")
