@@ -295,12 +295,12 @@ if __name__ == "__main__":
             train_model(train_data, val_data, autoencoder, 10, 500, saving_name)
             visualize_prediction(val_data[0][0], autoencoder, train=False)
         else :
-           path_to_model = input("Enter the path to the model : ")
-           autoencoder_loaded, encoder, decoder=load_autoencoder_model(path_to_model)
-           train_model(train_data, val_data, autoencoder_loaded, 3, 800, saving_name='vae_model')
+           file_name = input("Enter the model file name : ")
+           autoencoder_loaded, encoder, decoder=load_autoencoder_model('model/' + file_name)
+           train_model(train_data, val_data, autoencoder_loaded, 3, 800, saving_name=file_name)
            visualize_prediction(val_data[0][0], autoencoder_loaded, train=False)
     else :
-        path_to_model = input("Enter the path to the model : ")
-        autoencoder_loaded, encoder, decoder=load_autoencoder_model(path_to_model)
+        file_name = input("Enter the model file name : ")
+        autoencoder_loaded, encoder, decoder=load_autoencoder_model('model/' + file_name)
         visualize_prediction(val_data[0][0], autoencoder_loaded, train=False)
         test_encoder_decoder(val_data[0][0], encoder, decoder)
