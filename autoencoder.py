@@ -7,6 +7,7 @@ from keras import backend as K
 from keras.losses import mse
 import numpy as np
 import tensorflow as tf
+
 """====Functions===="""
 def split_data(im_fold, seed_nb, image_size):
     """
@@ -161,7 +162,7 @@ def create_autoencoder(input_shape):
     vae.summary()
     return vae
 
-def train_model(train_data, val_data, model, nbr_epochs, steps_per_epoch, graph=True):
+def train_model(train_data, val_data, model, nbr_epochs, steps_per_epoch, saving_name , graph=True):
     """
     Train the model on a train set
 
@@ -178,13 +179,14 @@ def train_model(train_data, val_data, model, nbr_epochs, steps_per_epoch, graph=
     for i in range (nbr_epochs):
         history=model.fit(
             train_data,
-            epochs=1,
+            epochs=2,
             steps_per_epoch=steps_per_epoch,
             shuffle=True,
             validation_data=val_data,
             workers=-1 #use all the processors
         )
-        model.save("vae_model.keras")
+        model.save("model/"+ saving_name+ ".keras")
+        model.save("model/"+ saving_name + ".h5")
         train_loss=train_loss+history.history['loss']
         val_loss=val_loss+history.history["val_loss"]
     if graph == True:
@@ -276,7 +278,6 @@ def plot_loss(train_loss, val_loss):
 
 """====Main===="""
 if __name__ == "__main__":
-    train_or_not=input("Do you want to train a new model [y/n] : ")
     print("Proceed to split data :")
     folder="./data/img_align_celeba"
     train_data, val_data=split_data(folder, seed_nb=40, image_size=(128,128))
@@ -284,13 +285,22 @@ if __name__ == "__main__":
     display_data_set(train_data)
     print("Test images loaded in val data : ")
     display_data_set(val_data)
+    train_or_not=input("Do you want to train a model [y/n] : ")
     if train_or_not=="y":
-        print("Creation of the model and print the summary : ")
-        autoencoder=create_autoencoder((128,128,3))
-        train_model(train_data, val_data, autoencoder, 10, 500)
-        visualize_prediction(val_data[0][0], autoencoder, train=False)
+        train_new =input("Do you want to train a new model [y/n] : ")
+        if train_new=="y":
+            saving_name=input("Choose a name for the model : ")
+            print("Creation of the model and print the summary : ")
+            autoencoder=create_autoencoder((128,128,3))
+            train_model(train_data, val_data, autoencoder, 10, 500, saving_name)
+            visualize_prediction(val_data[0][0], autoencoder, train=False)
+        else :
+           path_to_model = input("Enter the path to the model : ")
+           autoencoder_loaded, encoder, decoder=load_autoencoder_model(path_to_model)
+           train_model(train_data, val_data, autoencoder_loaded, 3, 800, saving_name='vae_model')
+           visualize_prediction(val_data[0][0], autoencoder_loaded, train=False)
     else :
-        autoencoder_loaded, encoder, decoder=load_autoencoder_model("vae_model.keras")
-        decoder.summary()
+        path_to_model = input("Enter the path to the model : ")
+        autoencoder_loaded, encoder, decoder=load_autoencoder_model(path_to_model)
         visualize_prediction(val_data[0][0], autoencoder_loaded, train=False)
         test_encoder_decoder(val_data[0][0], encoder, decoder)
