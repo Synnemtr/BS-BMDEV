@@ -7,6 +7,7 @@ from keras import backend as K
 from keras.losses import mse
 import numpy as np
 import tensorflow as tf
+import random
 
 """====Functions===="""
 def split_data(im_fold, seed_nb, image_size):
@@ -49,19 +50,21 @@ def split_data(im_fold, seed_nb, image_size):
     )
     return train_data, val_data
 
-def display_data_set(data):
+def display_data_set(data, population_size):
     """
     Display the 8th first pictures of the 1rst batch of a set of data
 
     Parameters : 
         data (numpy array) : set of image data (train or validation set)
+        population_size (number): number of images to be displayed
     
     """
+    random_images = random.sample(data, population_size)
     plt.figure(figsize=(10, 10))
     for image in data[0]:
-        for i in range(9):
-            ax = plt.subplot(3, 3, i + 1)
-            plt.imshow(image[i])
+        for i in range(population_size):
+            ax = plt.subplot(int(np.sqrt(population_size)), int(np.sqrt(population_size)), i + 1)
+            plt.imshow(random_images[i])
             plt.axis("off")
         plt.show()
         break
@@ -281,31 +284,31 @@ def plot_loss(train_loss, val_loss):
     plt.show()
 
 
-"""====Main===="""
-if __name__ == "__main__":
-    print("Proceed to split data :")
-    folder="./data/img_align_celeba"
-    train_data, val_data=split_data(folder, seed_nb=40, image_size=(160,144))
-    print("Test images loaded in train data : ")
-    display_data_set(train_data)
-    print("Test images loaded in val data : ")
-    display_data_set(val_data)
-    train_or_not=input("Do you want to train a model [y/n] : ")
-    if train_or_not=="y":
-        train_new =input("Do you want to train a new model [y/n] : ")
-        if train_new=="y":
-            saving_name=input("Choose a name for the model : ")
-            print("Creation of the model and print the summary : ")
-            autoencoder=create_autoencoder((160,144,3), latent_dim=252)
-            train_model(train_data, val_data, autoencoder, 10, 500, saving_name)
-            visualize_prediction(val_data[0][0], autoencoder, train=False, nbr_images_displayed=8)
-        else :
-           file_name = input("Enter the model file name : ")
-           autoencoder_loaded, encoder, decoder=load_autoencoder_model('model/' + file_name + '.keras')
-           train_model(train_data, val_data, autoencoder_loaded, 3, 1000, saving_name=file_name)
-           visualize_prediction(val_data[0][0], autoencoder_loaded, train=False, nbr_images_displayed=8)
-    else :
-        file_name = input("Enter the model file name : ")
-        autoencoder_loaded, encoder, decoder=load_autoencoder_model('model/' + file_name + '.keras')
-        visualize_prediction(val_data[0][0], autoencoder_loaded, train=False, nbr_images_displayed=8)
-        test_encoder_decoder(val_data[0][0], encoder, decoder, 8)
+# """====Main===="""
+# if __name__ == "__main__":
+#     print("Proceed to split data :")
+#     folder="./data/img_align_celeba"
+#     train_data, val_data=split_data(folder, seed_nb=40, image_size=(160,144))
+#     print("Test images loaded in train data : ")
+#     display_data_set(train_data, 9)
+#     print("Test images loaded in val data : ")
+#     display_data_set(val_data, 9)
+#     train_or_not=input("Do you want to train a model [y/n] : ")
+#     if train_or_not=="y":
+#         train_new =input("Do you want to train a new model [y/n] : ")
+#         if train_new=="y":
+#             saving_name=input("Choose a name for the model : ")
+#             print("Creation of the model and print the summary : ")
+#             autoencoder=create_autoencoder((160,144,3), latent_dim=252)
+#             train_model(train_data, val_data, autoencoder, 10, 500, saving_name)
+#             visualize_prediction(val_data[0][0], autoencoder, train=False, nbr_images_displayed=8)
+#         else :
+#            file_name = input("Enter the model file name : ")
+#            autoencoder_loaded, encoder, decoder=load_autoencoder_model('model/' + file_name + '.keras')
+#            train_model(train_data, val_data, autoencoder_loaded, 3, 1000, saving_name=file_name)
+#            visualize_prediction(val_data[0][0], autoencoder_loaded, train=False, nbr_images_displayed=8)
+#     else :
+#         file_name = input("Enter the model file name : ")
+#         autoencoder_loaded, encoder, decoder=load_autoencoder_model('model/' + file_name + '.keras')
+#         visualize_prediction(val_data[0][0], autoencoder_loaded, train=False, nbr_images_displayed=8)
+#         test_encoder_decoder(val_data[0][0], encoder, decoder, 8)

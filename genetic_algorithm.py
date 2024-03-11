@@ -43,6 +43,9 @@ def mutate_genome(genome, mutation_rate):
 
 # Create offspring by crossover and mutation
 def crossover(parent1, parent2):
+    parent1 = np.array(parent1)
+    parent2 = np.array(parent2)
+
     crossover_point = random.randint(0, len(parent1) - 1)
     child = np.concatenate([parent1[:crossover_point], parent2[crossover_point:]])
     return child

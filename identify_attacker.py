@@ -1,13 +1,30 @@
-import os
-from PIL import Image
 import numpy as np
 import matplotlib.pyplot as plt
 import random
-from autoencoder import create_autoencoder, load_autoencoder_model, split_data, display_data_set, visualize_prediction, test_encoder_decoder, train_model, plot_loss
+from autoencoder import create_autoencoder, load_autoencoder_model, split_data, display_data_set, visualize_prediction, test_encoder_decoder, train_model
 from genetic_algorithm import genetic_algorithm
 
 
 # Function to train the autoencoder
+# def population_initiation(image_folder, population_size):
+    # folder = image_folder + "/small_set"
+    # all_files = [f for f in os.listdir(folder) if f.endswith('.jpg')]
+    # population_files = random.sample(all_files, population_size)
+
+    # population_images = []
+    # plt.figure(figsize=(10, 10))
+    # for i, image_file in enumerate(population_files):
+    #     img = Image.open(os.path.join(folder, image_file))
+    #     population_images.append(np.array(img))
+    #     plt.subplot(2, 2, i + 1)
+    #     img = np.squeeze(img)
+    #     plt.imshow(img)
+    #     plt.axis("off")
+    #     plt.title(f"Image {i + 1}")
+
+    # plt.show()
+
+    # return population_images
 def train_autoencoder(train_data, val_data):
     train_new =input("Do you want to train a new model [y/n] : ")
     if train_new=="y":
@@ -23,25 +40,22 @@ def train_autoencoder(train_data, val_data):
         visualize_prediction(val_data[0][0], autoencoder_loaded, train=False, nbr_images_displayed=8)
 
 # Initialize population with random genomes
-def population_initiation(image_folder, population_size):
-    folder = image_folder + "/small_set"
-    all_files = [f for f in os.listdir(folder) if f.endswith('.jpg')]
-    population_files = random.sample(all_files, population_size)
+def population_initiation(batch, population_size):
+    images, _ = next(batch)
 
-    population_images = []
+    if population_size > len(images):
+        print(f"Population size is greater than the number of images in the batch. Displaying {len(images)} images instead.")
+        population_size = len(images)
+
+    init_population = random.sample(list(images), population_size)
     plt.figure(figsize=(10, 10))
-    for i, image_file in enumerate(population_files):
-        img = Image.open(os.path.join(folder, image_file))
-        population_images.append(np.array(img))
-        plt.subplot(2, 2, i + 1)
-        img = np.squeeze(img)
-        plt.imshow(img)
+    for i in range(population_size):
+        ax = plt.subplot(int(np.sqrt(population_size)), int(np.sqrt(population_size)), i + 1)
+        plt.imshow(init_population[i])
         plt.axis("off")
-        plt.title(f"Image {i + 1}")
-
     plt.show()
 
-    return population_images
+    return init_population
 
 # [temporary] get the user's choice of the image that most resembles the attacker
 def get_victim_choice(images):
@@ -71,51 +85,55 @@ def display_image_vectors(images):
         print(img)
 
 # Identify the attacker using genetic algorithm and the autoencoder's encoder and decoder layer's
-def idenfity_attacker(autoencoder, encoder, decoder, population_size, max_iterations, mutation_rate):
-    population = population_initiation(folder, population_size)  # init random population
+def idenfity_attacker(autoencoder, encoder, decoder, batch, population_size, max_iterations, mutation_rate):
+    population = population_initiation(batch, population_size)  # init random population
     
     for i in range(max_iterations):
         victim_choice = get_victim_choice(population)
         encode_victim_choice = [encoder.predict(image.reshape(1, 160, 144, 3)) for image in victim_choice] #(batch size, height, width, channels)
         encode_population = [encoder.predict(image.reshape(1, 160, 144, 3)) for image in population]
         new_population = genetic_algorithm(decoder, encode_population, encode_victim_choice, population_size, mutation_rate)
-        decoded_new_population = [decoder.predict(image.reshape(1, 20, 18, 64)) for image in new_population]
+        decoded_new_population = [decoder.predict(image[-1]) for image in new_population]
+
         # display_image_vectors(decoded_new_population)
+        reshaped_population = [np.reshape(img, (160, 144, 3)) for img in decoded_new_population]
+        plt.figure(figsize=(10, 10))
+        for i, img in enumerate(reshaped_population):
+            plt.subplot(int(np.sqrt(len(reshaped_population))), int(np.sqrt(len(reshaped_population))), i + 1)
+            plt.imshow(img)
+            plt.axis("off")
+        plt.show()
+
         population = decoded_new_population
-
-        # reshaped_encoded_images = []
-        # for image in decoded_new_population:
-        #     reshaped_image = image.reshape(218, 178, 3)
-        #     reshaped_encoded_images.append(reshaped_image)
-        # stack = np.stack(reshaped_encoded_images, axis=0)
-        # visualize_prediction(stack, autoencoder_loaded, train=False)
         print(f"Iteration {i + 1} \n")
-
+            
 
 # Main function to run the program
 if __name__ == "__main__":
+
+    population_size = 4
+    max_iterations = 10
+    mutation_rate = 0.1
+
     print("Proceed to split data :")
     folder="./data/img_align_celeba"
     train_data, val_data=split_data(folder, seed_nb=40, image_size=(160,144))
+
     # print("Test images loaded in train data : ")
-    # display_data_set(train_data)
+    # display_data_set(train_data, population_size)
     # print("Test images loaded in val data : ")
-    # display_data_set(val_data)
+    # display_data_set(val_data, population_size)
     train_or_not=input("Do you want to train a model [y/n] : ")
 
     if train_or_not=="y":
         train_autoencoder(train_data, val_data)
     else :
-        population_size = 4
-        max_iterations = 2
-        mutation_rate = 0.1
-
         file_name = input("Enter the model file name : ")
         autoencoder_loaded, encoder, decoder=load_autoencoder_model('model/' + file_name + '.keras')
         encoder.summary()
         decoder.summary()
-
-        idenfity_attacker(autoencoder_loaded, encoder, decoder, population_size, max_iterations, mutation_rate)
+        autoencoder_loaded.summary()
+        idenfity_attacker(autoencoder_loaded, encoder, decoder, train_data, population_size, max_iterations, mutation_rate)
         
         # visualize_prediction(val_data[0][0], autoencoder_loaded, train=False, nbr_images_displayed=8)
         # test_encoder_decoder(val_data[0][0], encoder, decoder, 8)
