@@ -4,16 +4,17 @@ import random
 
 # Use autoencoder to decode the genomes
 def decode_genome(decoder, genome):
-    decoded_image = decoder.predict(genome)
-    return decoded_image
+    decoded_image = decoder.predict(genome.reshape(1, 55, 45, 32))
+    reshaped_image = decoded_image.reshape(218, 178, 3)
+    return reshaped_image
 
 # Evaluate the fitness of the decoded images
-def fitness_evaluation(decoder, encoded_population, encoded_target_images):
+def fitness_evaluation(decoder, population, encoded_target_images):
     fitness_values = []
     for genome in encoded_target_images:
         # TODO: compare decoded population and target images?
         # decoded_genome = decode_genome(decoder, genome)
-        fitnesses = [calculate_fitness(genome, original_image) for original_image in encoded_population]
+        fitnesses = [calculate_fitness(genome, original_image) for original_image in population]
         fitness = max(fitnesses)
         fitness_values.append(fitness)
     return np.array(fitness_values)

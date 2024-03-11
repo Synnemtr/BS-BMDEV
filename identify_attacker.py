@@ -27,22 +27,19 @@ def population_initiation(image_folder, population_size):
     for i, image_file in enumerate(population_files):
         img = Image.open(os.path.join(folder, image_file))
         population_images.append(np.array(img))
+        plt.subplot(2, 2, i + 1)
+        img = np.squeeze(img)
+        plt.imshow(img)
+        plt.axis("off")
+        plt.title(f"Image {i + 1}")
+
+    plt.show()
 
     return population_images
 
 # [temporary] get the user's choice of the image that most resembles the attacker
 def get_victim_choice(images):
     while True:
-        print("Choose the image(s) that most resemble the attacker (or type 'quit' to exit): ")
-        for i, img in enumerate(images):
-            plt.subplot(2, 2, i + 1)
-            img = np.squeeze(img)
-            plt.imshow(img)
-            plt.axis("off")
-            plt.title(f"Image {i + 1}")
-
-        plt.show()
-
         choices = input("Enter the number of the image(s) that most resemble the attacker (separated by commas): ").strip()
         if choices.lower() == 'quit':
             print("Exiting...")
@@ -68,7 +65,7 @@ def display_image_vectors(images):
         print(img)
 
 # Identify the attacker using genetic algorithm and the autoencoder's encoder and decoder layer's
-def idenfity_attacker(encoder, decoder, population_size, max_iterations, mutation_rate):
+def idenfity_attacker(autoencoder, encoder, decoder, population_size, max_iterations, mutation_rate):
     population = population_initiation(folder, population_size)  # init random population
     
     for i in range(max_iterations):
@@ -79,6 +76,13 @@ def idenfity_attacker(encoder, decoder, population_size, max_iterations, mutatio
         decoded_new_population = [decoder.predict(image.reshape(1, 55, 45, 32)) for image in new_population]
         # display_image_vectors(decoded_new_population)
         population = decoded_new_population
+
+        # reshaped_encoded_images = []
+        # for image in decoded_new_population:
+        #     reshaped_image = image.reshape(218, 178, 3)
+        #     reshaped_encoded_images.append(reshaped_image)
+        # stack = np.stack(reshaped_encoded_images, axis=0)
+        # visualize_prediction(stack, autoencoder_loaded, train=False)
         print(f"Iteration {i + 1} \n")
 
 
@@ -88,20 +92,20 @@ if __name__ == "__main__":
     print("Proceed to split data :")
     folder="./data/small_set"
     train_data, val_data=split_data(folder, seed_nb=40)
-    print("Test images loaded in train data : ")
-    display_data_set(train_data)
-    print("Test images loaded in val data : ")
-    display_data_set(val_data)
+    # print("Test images loaded in train data : ")
+    # display_data_set(train_data)
+    # print("Test images loaded in val data : ")
+    # display_data_set(val_data)
 
     if train_or_not=="y":
         train_autoencoder(train_data, val_data)
     else :
         population_size = 4
-        max_iterations = 10
+        max_iterations = 2
         mutation_rate = 0.1
         autoencoder_loaded, encoder, decoder=load_autoencoder_model("autoencoder_model.keras", "max_pooling2d_1",["conv2d_transpose","conv2d_2"] )
         encoder.summary()
         decoder.summary()
-        idenfity_attacker(encoder, decoder, population_size, max_iterations, mutation_rate)
+        idenfity_attacker(autoencoder_loaded, encoder, decoder, population_size, max_iterations, mutation_rate)
         # visualize_prediction(val_data[0][0], autoencoder_loaded, train=False)
         # test_encoder_decoder(val_data[0][0], encoder, decoder)
