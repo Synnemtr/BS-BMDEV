@@ -186,21 +186,22 @@ def train_model(train_data, val_data, model, nbr_epochs, steps_per_epoch, saving
             workers=-1 #use all the processors
         )
         model.save("model/"+ saving_name+ ".keras")
-        model.save("model/"+ saving_name + ".h5")
+        #model.save("model/"+ saving_name + ".h5")
         train_loss=train_loss+history.history['loss']
         val_loss=val_loss+history.history["val_loss"]
     if graph == True:
         plot_loss(train_loss, val_loss)
 
-def visualize_prediction(data_batch, model, train):
+def visualize_prediction(data_batch, model, train, nbr_images_displayed):
     """
-    Visualize the 8 first results of the model prediction on one batch
+    Visualize the first results of the model prediction on one batch
         
     Parameters :
         data_batch (NumPy array) = one batch of a data set
         model = the model use to predict
-        train (bool) = True if its a batch from a train set /
-    False if it's from a validation set
+        train (bool) = True if its a batch from a train set 
+                    False if it's from a validation set
+        nrb_images_dispalyed (int) = number of images to be displayed 
 
     """
     pred_batch=model.predict(data_batch)
@@ -209,7 +210,9 @@ def visualize_prediction(data_batch, model, train):
         plt.suptitle("Model Evaluation on Train Data", size=18)
     else:
         plt.suptitle("Model Evaluation on Validation Data", size=18)
-    for i in range (8):
+    if nbr_images_displayed > len(data_batch):
+        nbr_images_displayed=len(data_batch)
+    for i in range (nbr_images_displayed):
         plt.subplot(4,4,i*2+1)
         plt.imshow(data_batch[i])
         plt.title("Image")
@@ -237,7 +240,7 @@ def load_autoencoder_model(model_path):
     decoder=autoencoder_loaded.get_layer("decoder")
     return autoencoder_loaded, encoder, decoder
 
-def test_encoder_decoder(data_batch, encoder, decoder):
+def test_encoder_decoder(data_batch, encoder, decoder, nbr_images_displayed):
     """
     Visualize the results of predictions using encoder and decoder separatly
 
@@ -248,7 +251,9 @@ def test_encoder_decoder(data_batch, encoder, decoder):
     """
     encoded_data=encoder.predict(data_batch)
     decoded_data=decoder.predict(encoded_data[-1])
-    for i in range (8):
+    if nbr_images_displayed > len(data_batch):
+        nbr_images_displayed=len(data_batch)
+    for i in range (nbr_images_displayed):
         plt.subplot(4,4 ,i*2+1)
         plt.imshow(data_batch[i])
         plt.title("Image")
@@ -280,7 +285,7 @@ def plot_loss(train_loss, val_loss):
 if __name__ == "__main__":
     print("Proceed to split data :")
     folder="./data/img_align_celeba"
-    train_data, val_data=split_data(folder, seed_nb=40, image_size=(128,128))
+    train_data, val_data=split_data(folder, seed_nb=40, image_size=(160,144))
     print("Test images loaded in train data : ")
     display_data_set(train_data)
     print("Test images loaded in val data : ")
@@ -291,16 +296,16 @@ if __name__ == "__main__":
         if train_new=="y":
             saving_name=input("Choose a name for the model : ")
             print("Creation of the model and print the summary : ")
-            autoencoder=create_autoencoder((128,128,3), latent_dim=300)
+            autoencoder=create_autoencoder((160,144,3), latent_dim=252)
             train_model(train_data, val_data, autoencoder, 10, 500, saving_name)
-            visualize_prediction(val_data[0][0], autoencoder, train=False)
+            visualize_prediction(val_data[0][0], autoencoder, train=False, nbr_images_displayed=8)
         else :
            file_name = input("Enter the model file name : ")
-           autoencoder_loaded, encoder, decoder=load_autoencoder_model('model/' + file_name)
-           train_model(train_data, val_data, autoencoder_loaded, 2, 800, saving_name=file_name)
-           visualize_prediction(val_data[0][0], autoencoder_loaded, train=False)
+           autoencoder_loaded, encoder, decoder=load_autoencoder_model('model/' + file_name + '.keras')
+           train_model(train_data, val_data, autoencoder_loaded, 3, 1000, saving_name=file_name)
+           visualize_prediction(val_data[0][0], autoencoder_loaded, train=False, nbr_images_displayed=8)
     else :
         file_name = input("Enter the model file name : ")
-        autoencoder_loaded, encoder, decoder=load_autoencoder_model('model/' + file_name)
-        visualize_prediction(val_data[0][0], autoencoder_loaded, train=False)
-        test_encoder_decoder(val_data[0][0], encoder, decoder)
+        autoencoder_loaded, encoder, decoder=load_autoencoder_model('model/' + file_name + '.keras')
+        visualize_prediction(val_data[0][0], autoencoder_loaded, train=False, nbr_images_displayed=8)
+        test_encoder_decoder(val_data[0][0], encoder, decoder, 8)
