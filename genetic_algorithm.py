@@ -4,8 +4,8 @@ import random
 
 # Use autoencoder to decode the genomes
 def decode_genome(decoder, genome):
-    decoded_image = decoder.predict(genome.reshape(1, 55, 45, 32))
-    reshaped_image = decoded_image.reshape(218, 178, 3)
+    decoded_image = decoder.predict(genome.reshape(1, 20, 18, 64))
+    reshaped_image = decoded_image.reshape(160, 144, 3)
     return reshaped_image
 
 # Evaluate the fitness of the decoded images

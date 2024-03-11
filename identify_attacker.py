@@ -3,18 +3,24 @@ from PIL import Image
 import numpy as np
 import matplotlib.pyplot as plt
 import random
-from autoencoder import create_modele, load_autoencoder_model, split_data, display_data_set, visualize_prediction, test_encoder_decoder, train_model, plot_loss
+from autoencoder import create_autoencoder, load_autoencoder_model, split_data, display_data_set, visualize_prediction, test_encoder_decoder, train_model, plot_loss
 from genetic_algorithm import genetic_algorithm
 
 
 # Function to train the autoencoder
 def train_autoencoder(train_data, val_data):
-    print("Creation of the model and print the summary : ")
-    autoencoder=create_modele((218,178,3),20)
-    history=train_model(train_data, val_data, autoencoder, 3, 20)
-    autoencoder.save("autoencoder_model.keras")
-    visualize_prediction(val_data[0][0], autoencoder, train=False)
-    plot_loss(history)
+    train_new =input("Do you want to train a new model [y/n] : ")
+    if train_new=="y":
+        saving_name=input("Choose a name for the model : ")
+        print("Creation of the model and print the summary : ")
+        autoencoder=create_autoencoder((160,144,3), latent_dim=252)
+        train_model(train_data, val_data, autoencoder, 10, 500, saving_name)
+        visualize_prediction(val_data[0][0], autoencoder, train=False, nbr_images_displayed=8)
+    else :
+        file_name = input("Enter the model file name : ")
+        autoencoder_loaded, encoder, decoder=load_autoencoder_model('model/' + file_name + '.keras')
+        train_model(train_data, val_data, autoencoder_loaded, 3, 1000, saving_name=file_name)
+        visualize_prediction(val_data[0][0], autoencoder_loaded, train=False, nbr_images_displayed=8)
 
 # Initialize population with random genomes
 def population_initiation(image_folder, population_size):
@@ -70,10 +76,10 @@ def idenfity_attacker(autoencoder, encoder, decoder, population_size, max_iterat
     
     for i in range(max_iterations):
         victim_choice = get_victim_choice(population)
-        encode_victim_choice = [encoder.predict(image.reshape(1, 218, 178, 3)) for image in victim_choice] #(batch size, height, width, channels)
-        encode_population = [encoder.predict(image.reshape(1, 218, 178, 3)) for image in population]
+        encode_victim_choice = [encoder.predict(image.reshape(1, 160, 144, 3)) for image in victim_choice] #(batch size, height, width, channels)
+        encode_population = [encoder.predict(image.reshape(1, 160, 144, 3)) for image in population]
         new_population = genetic_algorithm(decoder, encode_population, encode_victim_choice, population_size, mutation_rate)
-        decoded_new_population = [decoder.predict(image.reshape(1, 55, 45, 32)) for image in new_population]
+        decoded_new_population = [decoder.predict(image.reshape(1, 20, 18, 64)) for image in new_population]
         # display_image_vectors(decoded_new_population)
         population = decoded_new_population
 
@@ -88,14 +94,14 @@ def idenfity_attacker(autoencoder, encoder, decoder, population_size, max_iterat
 
 # Main function to run the program
 if __name__ == "__main__":
-    train_or_not=input("Do you want to train a new model [y/n] : ")
     print("Proceed to split data :")
-    folder="./data/small_set"
-    train_data, val_data=split_data(folder, seed_nb=40)
+    folder="./data/img_align_celeba"
+    train_data, val_data=split_data(folder, seed_nb=40, image_size=(160,144))
     # print("Test images loaded in train data : ")
     # display_data_set(train_data)
     # print("Test images loaded in val data : ")
     # display_data_set(val_data)
+    train_or_not=input("Do you want to train a model [y/n] : ")
 
     if train_or_not=="y":
         train_autoencoder(train_data, val_data)
@@ -103,9 +109,13 @@ if __name__ == "__main__":
         population_size = 4
         max_iterations = 2
         mutation_rate = 0.1
-        autoencoder_loaded, encoder, decoder=load_autoencoder_model("autoencoder_model.keras", "max_pooling2d_1",["conv2d_transpose","conv2d_2"] )
+
+        file_name = input("Enter the model file name : ")
+        autoencoder_loaded, encoder, decoder=load_autoencoder_model('model/' + file_name + '.keras')
         encoder.summary()
         decoder.summary()
+
         idenfity_attacker(autoencoder_loaded, encoder, decoder, population_size, max_iterations, mutation_rate)
-        # visualize_prediction(val_data[0][0], autoencoder_loaded, train=False)
-        # test_encoder_decoder(val_data[0][0], encoder, decoder)
+        
+        # visualize_prediction(val_data[0][0], autoencoder_loaded, train=False, nbr_images_displayed=8)
+        # test_encoder_decoder(val_data[0][0], encoder, decoder, 8)
