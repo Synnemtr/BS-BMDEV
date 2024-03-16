@@ -2,3 +2,5 @@ numpy==1.26.0
 matplotlib==3.8.2
 pandas==1.4.4
 scipy==1.12.0
+tensorflow==2.15.0
+keras==2.15.0

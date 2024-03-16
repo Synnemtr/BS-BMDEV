@@ -1,5 +1,4 @@
 import tkinter as tk
-from tkinter import *
 from PIL import Image, ImageTk
 import numpy as np
 
@@ -10,74 +9,91 @@ class UserInterface:
         self.root.title("Attacker identifier")
         self.root.geometry("1000x600")
         self.root.resizable(False, False)
+        # self.root.protocol("WM_DELETE_WINDOW", self.root.quit)
 
         self.main_label = tk.Label(self.root, text="Click on the image that most resembles your attacker.")
-        self.main_label.grid(row=0)
+        self.main_label.grid(row=0, column=0, columnspan=2, padx=10, pady=10, ipadx=10, ipady=10)
 
         self.population = population
+        self.iteration = 1
 
-        self.image1 = ImageTk.PhotoImage(Image.fromarray(self.population[0]))
+        self.image1 = ImageTk.PhotoImage(Image.fromarray((self.population[0] * 255).astype(np.uint8)))
         self.button1 = tk.Button(self.root, text='1', image=self.image1)
         self.button1.configure(command=lambda: self.on_image_click(self.button1))
-        self.button1.grid(row=1, column=0)
+        self.button1.grid(row=1, column=0, padx=10, pady=10)
 
-        self.image2 = ImageTk.PhotoImage(Image.fromarray(self.population[1]))
+        self.image2 = ImageTk.PhotoImage(Image.fromarray((self.population[1] * 255).astype(np.uint8)))
         self.button2 = tk.Button(self.root, text='2', image=self.image2)
         self.button2.configure(command=lambda: self.on_image_click(self.button2))
-        self.button2.grid(row=1, column=1)
+        self.button2.grid(row=1, column=1, padx=10, pady=10)
 
-        self.image3 = ImageTk.PhotoImage(Image.fromarray(self.population[2]))
+        self.image3 = ImageTk.PhotoImage(Image.fromarray((self.population[2] * 255).astype(np.uint8)))
         self.button3 = tk.Button(self.root, text='3', image=self.image3)
         self.button3.configure(command=lambda: self.on_image_click(self.button3))
-        self.button3.grid(row=2, column=0)
+        self.button3.grid(row=2, column=0, padx=10, pady=10)
 
-        self.image4 = ImageTk.PhotoImage(Image.fromarray(self.population[3]))
+        self.image4 = ImageTk.PhotoImage(Image.fromarray((self.population[3] * 255).astype(np.uint8)))
         self.button4 = tk.Button(self.root, text='4', image=self.image4)
         self.button4.configure(command=lambda: self.on_image_click(self.button4))
-        self.button4.grid(row=2, column=1)
+        self.button4.grid(row=2, column=1, padx=10, pady=10)
 
         self.validationButton = tk.Button(self.root, text='Validate', command=self.on_validate_click)
-        self.validationButton.grid(sticky='se')
+        self.validationButton.grid(row=4, column=0, columnspan=2, padx=10, pady=10, ipadx=75, ipady=5)
+
+        self.iteration_label = tk.Label(self.root, text=f'Iteration: {self.iteration}')
+        self.iteration_label.grid(row=5, column=0, columnspan=2, padx=10, pady=10)
+
+        # self.fin0_label = tk.Label(self.root, text="fin")
+        # self.fin0_label.grid(row=6, column=0, sticky = 'e')
+
+        # self.debut0_label = tk.Label(self.root, text="debut")
+        # self.debut0_label.grid(row=6, column=0, sticky = 'w')
+
+        # self.fin1_label = tk.Label(self.root, text="fin")
+        # self.fin1_label.grid(row=6, column=1, sticky = 'e')
+
+        # self.debut1_label = tk.Label(self.root, text="debut")
+        # self.debut1_label.grid(row=6, column=1, sticky = 'w')
         
         self.user_choice = []
         self.choices_validated = False   #identify_attacker.py waits for this to be True before continuing
 
     def on_image_click(self, button):
         image_number = int(button.cget('text'))
-        image = button.cget('image')
+        image = self.population[image_number - 1]
         if image not in self.user_choice:
             self.user_choice.append(image)
         self.buttonClickedLabel = tk.Label(self.root, text=f"You clicked on image {image_number}")
-        self.buttonClickedLabel.grid(row=5, column=0)
-        #return image_number
+        self.buttonClickedLabel.grid(row=3, column=0, columnspan=2, padx=10, pady=10)
 
     def on_validate_click(self):
-        self.choice_validated = True
-        # choice = []
-        # for image_number in self.which_image_clicked:
-        #     choice.append(image_number)
-        # return choice
+        self.choices_validated = True
+        # print("Validation button clicked")
     
     def display_new_images(self, new_population):
         self.population = new_population
         self.user_choice = []
         self.choices_validated = False
+        self.iteration += 1
 
-        self.image1 = self.population[0]
+        self.image1 = ImageTk.PhotoImage(Image.fromarray((self.population[0] * 255).astype(np.uint8)))
         self.button1 = tk.Button(self.root, text='1', image=self.image1, command=self.on_image_click(self.button1))
         self.button1.grid(row=1, column=0)
 
-        self.image2 = self.population[1]
+        self.image2 = ImageTk.PhotoImage(Image.fromarray((self.population[1] * 255).astype(np.uint8)))
         self.button2 = tk.Button(self.root, text='2', image=self.image2, command=self.on_image_click(self.button2))
         self.button2.grid(row=1, column=1)
 
-        self.image3 = self.population[2]
+        self.image3 = ImageTk.PhotoImage(Image.fromarray((self.population[2] * 255).astype(np.uint8)))
         self.button3 = tk.Button(self.root, text='3', image=self.image3, command=self.on_image_click(self.button3))
         self.button3.grid(row=2, column=0)
 
-        self.image4 = self.population[3]
+        self.image4 = ImageTk.PhotoImage(Image.fromarray((self.population[3] * 255).astype(np.uint8)))
         self.button4 = tk.Button(self.root, text='4', image=self.image4, command=self.on_image_click(self.button4))
         self.button4.grid(row=2, column=1)
+
+        self.iteration_label = tk.Label(self.root, text=f'Iteration: {self.iteration}')
+        self.iteration_label.grid(row=5, column=0, columnspan=2, padx=10, pady=10)
 
 def main():
     root = tk.Tk()

@@ -3,6 +3,9 @@ import matplotlib.pyplot as plt
 import random
 from autoencoder import create_autoencoder, load_autoencoder_model, split_data, display_data_set, visualize_prediction, test_encoder_decoder, train_model
 from genetic_algorithm import genetic_algorithm
+import tkinter as tk
+from ui import UserInterface
+import time
 
 
 # Function to train the autoencoder
@@ -32,12 +35,12 @@ def train_autoencoder(train_data, val_data):
         print("Creation of the model and print the summary : ")
         autoencoder=create_autoencoder((160,144,3), latent_dim=252)
         train_model(train_data, val_data, autoencoder, 10, 500, saving_name)
-        visualize_prediction(val_data[0][0], autoencoder, train=False, nbr_images_displayed=8)
+        # visualize_prediction(val_data[0][0], autoencoder, train=False, nbr_images_displayed=8)
     else :
         file_name = input("Enter the model file name : ")
         autoencoder_loaded, encoder, decoder=load_autoencoder_model('model/' + file_name + '.keras')
         train_model(train_data, val_data, autoencoder_loaded, 3, 1000, saving_name=file_name)
-        visualize_prediction(val_data[0][0], autoencoder_loaded, train=False, nbr_images_displayed=8)
+        # visualize_prediction(val_data[0][0], autoencoder_loaded, train=False, nbr_images_displayed=8)
 
 # Initialize population with random genomes
 def population_initiation(batch, population_size):
@@ -48,12 +51,12 @@ def population_initiation(batch, population_size):
         population_size = len(images)
 
     init_population = random.sample(list(images), population_size)
-    plt.figure(figsize=(10, 10))
-    for i in range(population_size):
-        ax = plt.subplot(int(np.sqrt(population_size)), int(np.sqrt(population_size)), i + 1)
-        plt.imshow(init_population[i])
-        plt.axis("off")
-    plt.show()
+    # plt.figure(figsize=(10, 10))
+    # for i in range(population_size):
+    #     ax = plt.subplot(int(np.sqrt(population_size)), int(np.sqrt(population_size)), i + 1)
+    #     plt.imshow(init_population[i])
+    #     plt.axis("off")
+    # plt.show()
 
     return init_population
 
@@ -87,25 +90,33 @@ def display_image_vectors(images):
 # Identify the attacker using genetic algorithm and the autoencoder's encoder and decoder layer's
 def idenfity_attacker(autoencoder, encoder, decoder, batch, population_size, max_iterations, mutation_rate):
     population = population_initiation(batch, population_size)  # init random population
+    root = tk.Tk()
+    ui = UserInterface(root, population)
     
     for i in range(max_iterations):
-        victim_choice = get_victim_choice(population)
+        while not ui.choices_validated:
+            root.update_idletasks()
+            root.update()
+        victim_choice = ui.user_choice
+        # print(f"Victim choice: {victim_choice}")
         encode_victim_choice = [encoder.predict(image.reshape(1, 160, 144, 3)) for image in victim_choice] #(batch size, height, width, channels)
         encode_population = [encoder.predict(image.reshape(1, 160, 144, 3)) for image in population]
         new_population = genetic_algorithm(decoder, encode_population, encode_victim_choice, population_size, mutation_rate)
         decoded_new_population = [decoder.predict(image[-1]) for image in new_population]
+        population = decoded_new_population
 
         # display_image_vectors(decoded_new_population)
-        reshaped_population = [np.reshape(img, (160, 144, 3)) for img in decoded_new_population]
-        plt.figure(figsize=(10, 10))
-        for i, img in enumerate(reshaped_population):
-            plt.subplot(int(np.sqrt(len(reshaped_population))), int(np.sqrt(len(reshaped_population))), i + 1)
-            plt.imshow(img)
-            plt.axis("off")
-        plt.show()
+        ui.display_new_images(population)
+        
+        # reshaped_population = [np.reshape(img, (160, 144, 3)) for img in decoded_new_population]
+        # plt.figure(figsize=(10, 10))
+        # for i, img in enumerate(reshaped_population):
+        #     plt.subplot(int(np.sqrt(len(reshaped_population))), int(np.sqrt(len(reshaped_population))), i + 1)
+        #     plt.imshow(img)
+        #     plt.axis("off")
+        # plt.show()
 
-        population = decoded_new_population
-        print(f"Iteration {i + 1} \n")
+        # print(f"Iteration {i + 1} \n")
             
 
 # Main function to run the program
