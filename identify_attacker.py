@@ -5,7 +5,6 @@ from autoencoder import create_autoencoder, load_autoencoder_model, split_data, 
 from genetic_algorithm import genetic_algorithm
 import tkinter as tk
 from ui import UserInterface
-import time
 
 
 # Function to train the autoencoder
@@ -28,6 +27,7 @@ import time
     # plt.show()
 
     # return population_images
+
 def train_autoencoder(train_data, val_data):
     train_new =input("Do you want to train a new model [y/n] : ")
     if train_new=="y":
@@ -45,40 +45,11 @@ def train_autoencoder(train_data, val_data):
 # Initialize population with random genomes
 def population_initiation(batch, population_size):
     images, _ = next(batch)
-
     if population_size > len(images):
         print(f"Population size is greater than the number of images in the batch. Displaying {len(images)} images instead.")
         population_size = len(images)
-
     init_population = random.sample(list(images), population_size)
-    # plt.figure(figsize=(10, 10))
-    # for i in range(population_size):
-    #     ax = plt.subplot(int(np.sqrt(population_size)), int(np.sqrt(population_size)), i + 1)
-    #     plt.imshow(init_population[i])
-    #     plt.axis("off")
-    # plt.show()
-
     return init_population
-
-# [temporary] get the user's choice of the image that most resembles the attacker
-def get_victim_choice(images):
-    while True:
-        choices = input("Enter the number of the image(s) that most resemble the attacker (separated by commas): ").strip()
-        if choices.lower() == 'quit':
-            print("Exiting...")
-            return None
-
-        choices = [int(choice.strip()) - 1 for choice in choices.split(",")]
-
-        choice = []
-        for index in choices:
-            try:
-                choice.append(images[index])
-            except IndexError:
-                print("Invalid image number. Please try again.")
-                continue
-
-        return choice
 
 # Display image vectors
 def display_image_vectors(images):
@@ -92,31 +63,43 @@ def idenfity_attacker(autoencoder, encoder, decoder, batch, population_size, max
     population = population_initiation(batch, population_size)  # init random population
     root = tk.Tk()
     ui = UserInterface(root, population)
-    
+    # running = True
+    # while running :
     for i in range(max_iterations):
+        # # Check if the window is still open
+        # if not root.winfo_exists():
+        #     break
         while not ui.choices_validated:
             root.update_idletasks()
             root.update()
-        victim_choice = ui.user_choice
+        victim_choice = [ui.population[image_number - 1] for image_number in ui.user_choice]
         # print(f"Victim choice: {victim_choice}")
-        encode_victim_choice = [encoder.predict(image.reshape(1, 160, 144, 3)) for image in victim_choice] #(batch size, height, width, channels)
-        encode_population = [encoder.predict(image.reshape(1, 160, 144, 3)) for image in population]
+        # print("Victim choice[0] type : ", type(victim_choice[0]))
+        # print("Victim choice[0] shape : ", victim_choice[0].shape)
+        encode_victim_choice = [np.asarray(encoder.predict(image.reshape(1, 160, 144, 3))) for image in victim_choice] #(batch size, height, width, channels)
+        # print("Victim choice encoded!")
+        # print("Encoded victim choice[0] type : ", type(encode_victim_choice[0]))
+        # print("Encoded victim choice[0] shape : ", encode_victim_choice[0].shape)
+        encode_population = [np.asarray(encoder.predict(image.reshape(1, 160, 144, 3))) for image in population]
+        # print("Population encoded!")
+        # print("Encoded population[0] type : ", type(encode_population[0]))
+        # print("Encoded population[0] shape : ", encode_population[0].shape)
         new_population = genetic_algorithm(decoder, encode_population, encode_victim_choice, population_size, mutation_rate)
+        # print("New population generated!")
+        # print("New population[0] type : ", type(new_population[0]))
+        # print("New population[0] shape : ", new_population[0].shape)
+        # print("New population sample : ", new_population[0])
         decoded_new_population = [decoder.predict(image[-1]) for image in new_population]
-        population = decoded_new_population
+        # print("New population decoded!")
+        # print("Decoded population[0] type : ", type(decoded_new_population[0]))
+        # print("Decoded population[0] shape : ", decoded_new_population[0].shape)
+        # print("Decoded new population sample : ", decoded_new_population[0])
+        population = [image.reshape(160, 144, 3) for image in decoded_new_population]
+        # print("Population updated!")
+        # print("Population[0] type : ", type(population[0]))
+        # print("Population[0] shape : ", population[0].shape)
 
-        # display_image_vectors(decoded_new_population)
         ui.display_new_images(population)
-        
-        # reshaped_population = [np.reshape(img, (160, 144, 3)) for img in decoded_new_population]
-        # plt.figure(figsize=(10, 10))
-        # for i, img in enumerate(reshaped_population):
-        #     plt.subplot(int(np.sqrt(len(reshaped_population))), int(np.sqrt(len(reshaped_population))), i + 1)
-        #     plt.imshow(img)
-        #     plt.axis("off")
-        # plt.show()
-
-        # print(f"Iteration {i + 1} \n")
             
 
 # Main function to run the program
