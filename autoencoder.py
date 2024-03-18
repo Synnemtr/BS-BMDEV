@@ -7,7 +7,6 @@ from keras import backend as K
 from keras.losses import mse
 import numpy as np
 import tensorflow as tf
-import random
 
 """====Functions===="""
 def split_data(im_fold, seed_nb, image_size, batch_size):
@@ -50,21 +49,19 @@ def split_data(im_fold, seed_nb, image_size, batch_size):
     )
     return train_data, val_data
 
-def display_data_set(data, population_size):
+def display_data_set(data):
     """
     Display the 8th first pictures of the 1rst batch of a set of data
 
     Parameters : 
         data (numpy array) : set of image data (train or validation set)
-        population_size (number): number of images to be displayed
     
     """
-    random_images = random.sample(data, population_size)
     plt.figure(figsize=(10, 10))
     for image in data[0]:
-        for i in range(population_size):
-            ax = plt.subplot(int(np.sqrt(population_size)), int(np.sqrt(population_size)), i + 1)
-            plt.imshow(random_images[i])
+        for i in range(9):
+            ax = plt.subplot(3, 3, i + 1)
+            plt.imshow(image[i])
             plt.axis("off")
         plt.show()
         break
