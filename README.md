@@ -1,5 +1,9 @@
 # BS-BMDEV
 
+# Requirements :
+Tensorflow : 2.15.0
+Keras : 2.15.0
+
 # The autoencoder :
 
 This Python script allows to create, train or load a variational antoencoder model for image reconstruction from celebA dataset. The autoencoder is built using Keras library with Tensorflow backend.
