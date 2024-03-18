@@ -90,16 +90,16 @@ def idenfity_attacker(autoencoder, encoder, decoder, batch, population_size, max
     
     for i in range(max_iterations):
         victim_choice = get_victim_choice(population)
-        encode_victim_choice = [encoder.predict(image) for image in victim_choice]
-        encode_population = [encoder.predict(image) for image in population]
+        encode_victim_choice = [encoder.predict(image.reshape(1,128,128,3)) for image in victim_choice]
+        encode_population = [encoder.predict(image.reshape(1,128,128,3)) for image in population]
         new_population = genetic_algorithm(decoder, encode_population, encode_victim_choice, population_size, mutation_rate)
         decoded_new_population = [decoder.predict(image[-1]) for image in new_population]
 
-        # display_image_vectors(decoded_new_population)
-        # reshaped_population = [np.reshape(img, (160, 144, 3)) for img in decoded_new_population]
+        display_image_vectors(decoded_new_population)
+        reshaped_population = [np.reshape(img, (128, 128, 3)) for img in decoded_new_population]
         plt.figure(figsize=(10, 10))
-        for i, img in enumerate(decoded_new_population):
-            plt.subplot(int(np.sqrt(len(decoded_new_population))), int(np.sqrt(len(decoded_new_population))), i + 1)
+        for i, img in enumerate(reshaped_population):
+            plt.subplot(int(np.sqrt(len(reshaped_population))), int(np.sqrt(len(reshaped_population))), i + 1)
             plt.imshow(img)
             plt.axis("off")
         plt.show()
