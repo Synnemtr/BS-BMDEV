@@ -176,10 +176,7 @@ class UserInterface:
 
         self.main_label.config(text="You reached the maximum number of iterations. Final image of the attacker :")
 
-        print(f'final_individual : {self.final_individual}')
-        print(f'final population length : {len(self.final_individual)}')
         self.image1 = ImageTk.PhotoImage(Image.fromarray((self.final_individual[0] * 255).astype(np.uint8)))
-        # print(f'image : {self.image1}')
         self.final_picture = tk.Label(self.root, image=self.image1)
         self.final_picture.grid(row=1, column=0, columnspan=2, padx=10, pady=10)
 

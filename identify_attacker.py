@@ -77,7 +77,6 @@ def identifying_loop(root, ui, encoder, decoder, population, population_size, ma
         while ui.window_exists and not ui.choices_validated:
             root.update_idletasks()
             root.update()
-        print("Choices validated!")
         if not ui.window_exists:
             break
         victim_choice = [ui.population[image_number - 1] for image_number in ui.user_choice]
