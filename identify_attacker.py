@@ -10,9 +10,8 @@ from ui import UserInterface
 
 # pourquoi images générées sont moches ? Et pourquoi plusieurs fois les mêmes ?
 # changer modèle utilisé : meilleur modèle entraîné par Théo ?
-# Ajouter une page de fin : image finale et possibilité de recommencer / augmenter le nombre d'itérations
-# choix d'entraîner ou non le modèle et du modèle à utiliser dans la fenêtre plutôt que dans terminal
-# fenêtre de chargement pendant que la population initiale est générée
+# choix d'entraîner ou non le modèle et du modèle à utiliser dans la fenêtre plutôt que dans terminal ?
+# fenêtre de chargement pendant que la population initiale est générée ?
 # checkbox à la place des boutons ?
 # afficher les images au milieu de la fenêtre
 # Ajouter possibilité de choisir le nombre d'itérations
@@ -64,13 +63,6 @@ def population_initiation(batch, population_size):
     init_population = random.sample(list(images), population_size)
     return init_population
 
-# Display image vectors
-def display_image_vectors(images):
-    for i, img in enumerate(images):
-        img = np.squeeze(img)
-        print(f"Image {i + 1}: ")
-        print(img)
-
 def identifying_loop(root, ui, encoder, decoder, population, population_size, max_iterations, mutation_rate):
     for i in range(max_iterations):
         # Checks the status of the choices_validated variable and if the window is still open
@@ -80,17 +72,18 @@ def identifying_loop(root, ui, encoder, decoder, population, population_size, ma
         if not ui.window_exists:
             break
         victim_choice = [ui.population[image_number - 1] for image_number in ui.user_choice]
-        encode_victim_choice = [np.asarray(encoder.predict(image.reshape(1, 160, 144, 3))) for image in victim_choice] #(batch size, height, width, channels)
-        encode_population = [np.asarray(encoder.predict(image.reshape(1, 160, 144, 3))) for image in population]
+        print(type(victim_choice[0]))
+        encode_victim_choice = [encoder.predict(image.reshape(1, 128, 128, 3)) for image in victim_choice] #(batch size, height, width, channels)
+        encode_population = [np.asarray(encoder.predict(image.reshape(1, 128, 128, 3))) for image in population]
         if i < max_iterations - 1:
             new_population = genetic_algorithm(decoder, encode_population, encode_victim_choice, population_size, mutation_rate)
             decoded_new_population = [decoder.predict(image[-1]) for image in new_population]
-            population = [image.reshape(160, 144, 3) for image in decoded_new_population]
+            population = [image.reshape(128, 128, 3) for image in decoded_new_population]
             ui.display_new_images(population)    
         else:
             new_population = genetic_algorithm(decoder, encode_population, encode_victim_choice, 1, mutation_rate)
             decoded_new_population = [decoder.predict(image[-1]) for image in new_population]
-            population = [image.reshape(160, 144, 3) for image in decoded_new_population]
+            population = [image.reshape(128, 128, 3) for image in decoded_new_population]
 
             # new_population_if_continue = genetic_algorithm(decoder, encode_population, encode_victim_choice, population_size, mutation_rate)
             # decoded_new_population_if_continue = [decoder.predict(image[-1]) for image in new_population_if_continue]
@@ -120,7 +113,7 @@ if __name__ == "__main__":
 
     print("Proceed to split data :")
     folder="./data/img_align_celeba"
-    train_data, val_data=split_data(folder, seed_nb=40, image_size=(160,144))
+    train_data, val_data=split_data(folder, seed_nb=40, image_size=(128,128), batch_size=128)
 
     # print("Test images loaded in train data : ")
     # display_data_set(train_data, population_size)
