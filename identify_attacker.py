@@ -6,6 +6,18 @@ from genetic_algorithm import genetic_algorithm
 import tkinter as tk
 from ui import UserInterface
 
+## Reste à faire :
+
+# pourquoi images générées sont moches ? Et pourquoi plusieurs fois les mêmes ?
+# changer modèle utilisé : meilleur modèle entraîné par Théo ?
+# Ajouter une page de fin : image finale et possibilité de recommencer / augmenter le nombre d'itérations
+# choix d'entraîner ou non le modèle et du modèle à utiliser dans la fenêtre plutôt que dans terminal
+# fenêtre de chargement pendant que la population initiale est générée
+# checkbox à la place des boutons ?
+# afficher les images au milieu de la fenêtre
+# Ajouter possibilité de choisir le nombre d'itérations
+# Ajouter possibilité de choisir de continuer / arrêter après chaque itération
+
 
 # Function to train the autoencoder
 # def population_initiation(image_folder, population_size):
@@ -58,49 +70,46 @@ def display_image_vectors(images):
         print(f"Image {i + 1}: ")
         print(img)
 
+def n_iterations_loop(max_iterations, root, ui, encoder, decoder, population, population_size, mutation_rate):
+    for i in range(max_iterations):
+        # Checks the status of the choices_validated variable and if the window is still open
+        while ui.window_exists and not ui.choices_validated:
+            root.update_idletasks()
+            root.update()
+        if not ui.window_exists:
+            break
+        victim_choice = [ui.population[image_number - 1] for image_number in ui.user_choice]
+        encode_victim_choice = [np.asarray(encoder.predict(image.reshape(1, 160, 144, 3))) for image in victim_choice] #(batch size, height, width, channels)
+        encode_population = [np.asarray(encoder.predict(image.reshape(1, 160, 144, 3))) for image in population]
+        if i < max_iterations - 1:
+            new_population = genetic_algorithm(decoder, encode_population, encode_victim_choice, population_size, mutation_rate)
+            decoded_new_population = [decoder.predict(image[-1]) for image in new_population]
+            population = [image.reshape(160, 144, 3) for image in decoded_new_population]
+            ui.display_new_images(population)    
+        else:
+            new_population = genetic_algorithm(decoder, encode_population, encode_victim_choice, 1, mutation_rate)
+            decoded_new_population = [decoder.predict(image[-1]) for image in new_population]
+            population = [image.reshape(160, 144, 3) for image in decoded_new_population]
+            new_population_if_continue = genetic_algorithm(decoder, encode_population, encode_victim_choice, population_size, mutation_rate)
+            decoded_new_population_if_continue = [decoder.predict(image[-1]) for image in new_population_if_continue]
+            population_if_continue = [image.reshape(160, 144, 3) for image in decoded_new_population_if_continue]
+            ui.end_screen(population, population_if_continue)
+
 # Identify the attacker using genetic algorithm and the autoencoder's encoder and decoder layer's
 def idenfity_attacker(autoencoder, encoder, decoder, batch, population_size, max_iterations, mutation_rate):
     population = population_initiation(batch, population_size)  # init random population
     root = tk.Tk()
     ui = UserInterface(root, population)
-    # running = True
-    # while running :
-    for i in range(max_iterations):
-        # # Check if the window is still open
-        # if not root.winfo_exists():
-        #     break
-        while not ui.choices_validated:
+    n_iterations_loop(max_iterations, root, ui, encoder, decoder, population, population_size, mutation_rate)
+    while ui.window_exists or not ui.more_iterations:
+        root.update_idletasks()
+        root.update()
+    while ui.more_iterations == True:
+        n_iterations_loop(max_iterations, root, ui, encoder, decoder, population, population_size, mutation_rate)
+        while ui.window_exists or not ui.more_iterations:
             root.update_idletasks()
             root.update()
-        victim_choice = [ui.population[image_number - 1] for image_number in ui.user_choice]
-        # print(f"Victim choice: {victim_choice}")
-        # print("Victim choice[0] type : ", type(victim_choice[0]))
-        # print("Victim choice[0] shape : ", victim_choice[0].shape)
-        encode_victim_choice = [np.asarray(encoder.predict(image.reshape(1, 160, 144, 3))) for image in victim_choice] #(batch size, height, width, channels)
-        # print("Victim choice encoded!")
-        # print("Encoded victim choice[0] type : ", type(encode_victim_choice[0]))
-        # print("Encoded victim choice[0] shape : ", encode_victim_choice[0].shape)
-        encode_population = [np.asarray(encoder.predict(image.reshape(1, 160, 144, 3))) for image in population]
-        # print("Population encoded!")
-        # print("Encoded population[0] type : ", type(encode_population[0]))
-        # print("Encoded population[0] shape : ", encode_population[0].shape)
-        new_population = genetic_algorithm(decoder, encode_population, encode_victim_choice, population_size, mutation_rate)
-        # print("New population generated!")
-        # print("New population[0] type : ", type(new_population[0]))
-        # print("New population[0] shape : ", new_population[0].shape)
-        # print("New population sample : ", new_population[0])
-        decoded_new_population = [decoder.predict(image[-1]) for image in new_population]
-        # print("New population decoded!")
-        # print("Decoded population[0] type : ", type(decoded_new_population[0]))
-        # print("Decoded population[0] shape : ", decoded_new_population[0].shape)
-        # print("Decoded new population sample : ", decoded_new_population[0])
-        population = [image.reshape(160, 144, 3) for image in decoded_new_population]
-        # print("Population updated!")
-        # print("Population[0] type : ", type(population[0]))
-        # print("Population[0] shape : ", population[0].shape)
-
-        ui.display_new_images(population)
-            
+    
 
 # Main function to run the program
 if __name__ == "__main__":
@@ -127,7 +136,7 @@ if __name__ == "__main__":
         encoder.summary()
         decoder.summary()
         autoencoder_loaded.summary()
+
         idenfity_attacker(autoencoder_loaded, encoder, decoder, train_data, population_size, max_iterations, mutation_rate)
-        
         # visualize_prediction(val_data[0][0], autoencoder_loaded, train=False, nbr_images_displayed=8)
         # test_encoder_decoder(val_data[0][0], encoder, decoder, 8)
