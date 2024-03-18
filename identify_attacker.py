@@ -72,7 +72,6 @@ def identifying_loop(root, ui, encoder, decoder, population, population_size, ma
         if not ui.window_exists:
             break
         victim_choice = [ui.population[image_number - 1] for image_number in ui.user_choice]
-        print(type(victim_choice[0]))
         encode_victim_choice = [encoder.predict(image.reshape(1, 128, 128, 3)) for image in victim_choice] #(batch size, height, width, channels)
         encode_population = [np.asarray(encoder.predict(image.reshape(1, 128, 128, 3))) for image in population]
         if i < max_iterations - 1:
@@ -93,7 +92,8 @@ def identifying_loop(root, ui, encoder, decoder, population, population_size, ma
 
 # Identify the attacker using genetic algorithm and the autoencoder's encoder and decoder layer's
 def idenfity_attacker(autoencoder, encoder, decoder, batch, population_size, max_iterations, mutation_rate):
-    population = population_initiation(batch, population_size)  # init random population
+    decoded_population = [autoencoder.predict(individual.reshape(1, 128, 128, 3)) for individual in population_initiation(batch, population_size)]  # init random population
+    population = [image.reshape(128, 128, 3) for image in decoded_population]
     root = tk.Tk()
     ui = UserInterface(root, population)
     identifying_loop(root, ui, encoder, decoder, population, population_size, max_iterations, mutation_rate)

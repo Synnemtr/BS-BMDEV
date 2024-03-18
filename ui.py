@@ -8,7 +8,7 @@ class UserInterface:
     def __init__(self, root, population):
         self.root = root
         self.root.title("Attacker identifier")
-        self.root.geometry("1000x600")
+        self.root.geometry("340x535")
         self.root.resizable(False, False)
         self.root.protocol("WM_DELETE_WINDOW", self.stop_program)
 
