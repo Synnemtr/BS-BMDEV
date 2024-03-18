@@ -17,6 +17,7 @@ from ui import UserInterface
 # afficher les images au milieu de la fenêtre
 # Ajouter possibilité de choisir le nombre d'itérations
 # Ajouter possibilité de choisir de continuer / arrêter après chaque itération
+# Ajouter possibilité de choisir mutation_rate
 
 
 # Function to train the autoencoder
@@ -70,12 +71,13 @@ def display_image_vectors(images):
         print(f"Image {i + 1}: ")
         print(img)
 
-def n_iterations_loop(max_iterations, root, ui, encoder, decoder, population, population_size, mutation_rate):
+def identifying_loop(root, ui, encoder, decoder, population, population_size, max_iterations, mutation_rate):
     for i in range(max_iterations):
         # Checks the status of the choices_validated variable and if the window is still open
         while ui.window_exists and not ui.choices_validated:
             root.update_idletasks()
             root.update()
+        print("Choices validated!")
         if not ui.window_exists:
             break
         victim_choice = [ui.population[image_number - 1] for image_number in ui.user_choice]
@@ -90,25 +92,24 @@ def n_iterations_loop(max_iterations, root, ui, encoder, decoder, population, po
             new_population = genetic_algorithm(decoder, encode_population, encode_victim_choice, 1, mutation_rate)
             decoded_new_population = [decoder.predict(image[-1]) for image in new_population]
             population = [image.reshape(160, 144, 3) for image in decoded_new_population]
-            new_population_if_continue = genetic_algorithm(decoder, encode_population, encode_victim_choice, population_size, mutation_rate)
-            decoded_new_population_if_continue = [decoder.predict(image[-1]) for image in new_population_if_continue]
-            population_if_continue = [image.reshape(160, 144, 3) for image in decoded_new_population_if_continue]
-            ui.end_screen(population, population_if_continue)
+
+            # new_population_if_continue = genetic_algorithm(decoder, encode_population, encode_victim_choice, population_size, mutation_rate)
+            # decoded_new_population_if_continue = [decoder.predict(image[-1]) for image in new_population_if_continue]
+            # population_if_continue = [image.reshape(160, 144, 3) for image in decoded_new_population_if_continue]
+
+            ui.end_screen(population)
 
 # Identify the attacker using genetic algorithm and the autoencoder's encoder and decoder layer's
 def idenfity_attacker(autoencoder, encoder, decoder, batch, population_size, max_iterations, mutation_rate):
     population = population_initiation(batch, population_size)  # init random population
     root = tk.Tk()
     ui = UserInterface(root, population)
-    n_iterations_loop(max_iterations, root, ui, encoder, decoder, population, population_size, mutation_rate)
-    while ui.window_exists or not ui.more_iterations:
-        root.update_idletasks()
-        root.update()
-    while ui.more_iterations == True:
-        n_iterations_loop(max_iterations, root, ui, encoder, decoder, population, population_size, mutation_rate)
-        while ui.window_exists or not ui.more_iterations:
-            root.update_idletasks()
-            root.update()
+    identifying_loop(root, ui, encoder, decoder, population, population_size, max_iterations, mutation_rate)
+    # while ui.window_exists and not ui.more_iterations:
+    #     root.update_idletasks()
+    #     root.update()
+    # if ui.more_iterations:
+    #     identifying_loop(root, ui, encoder, decoder, population, population_size, max_iterations, mutation_rate)
     
 
 # Main function to run the program
