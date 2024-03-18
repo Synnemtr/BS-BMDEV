@@ -10,7 +10,7 @@ import tensorflow as tf
 import random
 
 """====Functions===="""
-def split_data(im_fold, seed_nb, image_size):
+def split_data(im_fold, seed_nb, image_size, batch_size):
     """
     Proceed to the splitting of the data in a train set and a validation set
 
@@ -35,7 +35,7 @@ def split_data(im_fold, seed_nb, image_size):
     train_data=train_augment.flow_from_directory(
         im_fold,
         target_size=image_size,
-        batch_size=64,
+        batch_size=batch_size,
         subset='training',
         class_mode='input',
         seed=seed_nb
@@ -43,7 +43,7 @@ def split_data(im_fold, seed_nb, image_size):
     val_data=val_augment.flow_from_directory(
         im_fold,
         target_size=image_size,
-        batch_size=64,
+        batch_size=batch_size,
         subset='validation',
         class_mode='input',
         seed=seed_nb
@@ -91,12 +91,11 @@ def create_encoder(input_shape, latent_dim):
     x = layers.Conv2D(32,3,strides=2, padding='same', activation='relu')(inputs)
     x = layers.Conv2D(64,3,strides=2, padding='same', activation='relu')(x)
     x = layers.Conv2D(64,3,strides=2, padding='same', activation='relu')(x)
-    x = layers.Conv2D(64,3,strides=2, padding='same', activation='relu')(x)
+    x = layers.Conv2D(128,3,strides=2, padding='same', activation='relu')(x)
 
     shape_before_flattening = K.int_shape(x)
 
     x = layers.Flatten()(x)
-    x = layers.Dense(512, activation = "relu")(x)
 
     z_mean = layers.Dense(latent_dim, name="z_mean")(x)
     z_log_var = layers.Dense(latent_dim, name="z_log_var")(x)
@@ -122,7 +121,7 @@ def create_decoder(shape_before_flattening, z):
     decoder_input = layers.Input(K.int_shape(z)[1:])
     x = layers.Dense(np.prod(shape_before_flattening[1:]), activation='relu')(decoder_input)
     x = layers.Reshape(shape_before_flattening[1:])(x)
-    x = layers.Conv2DTranspose(64, 3, strides=2, padding='same', activation="relu")(x)
+    x = layers.Conv2DTranspose(128, 3, strides=2, padding='same', activation="relu")(x)
     x = layers.Conv2DTranspose(64, 3, strides=2, padding='same', activation="relu")(x)
     x = layers.Conv2DTranspose(64, 3, strides=2, padding='same', activation="relu")(x)
     x = layers.Conv2DTranspose(32, 3, strides=2, padding='same', activation="relu")(x)
@@ -156,7 +155,7 @@ def create_autoencoder(input_shape, latent_dim):
     # Define the VAE loss function
     reconstruction_loss = mse(K.flatten(inputs), K.flatten(outputs))
     reconstruction_loss *= input_shape[0] * input_shape[1] * input_shape[2]
-    kl_loss = -0.5 * K.sum(1 + z_log_var - K.square(z_mean) - K.exp(z_log_var), axis=1)
+    kl_loss = (-0.5 * K.sum(1 + z_log_var - K.square(z_mean) - K.exp(z_log_var), axis=1))*0.5
     vae_loss = K.mean( reconstruction_loss + kl_loss)
     vae.add_loss(vae_loss)
     vae.add_metric(kl_loss, name="kl_loss")
@@ -186,7 +185,7 @@ def train_model(train_data, val_data, model, nbr_epochs, steps_per_epoch, saving
             steps_per_epoch=steps_per_epoch,
             shuffle=True,
             validation_data=val_data,
-            workers=-1 #use all the processors
+            workers=2 #use all the processors
         )
         model.save("model/"+ saving_name+ ".keras")
         #model.save("model/"+ saving_name + ".h5")
@@ -276,7 +275,7 @@ def plot_loss(train_loss, val_loss):
         val_loss (list) :  list of the loss value for the validation set for each epoch
     """
     plt.plot(train_loss, label='train')
-    plt.plot(val_loss, label='Validatiion')
+    plt.plot(val_loss, label='Validation')
     plt.title('Loss of the model')
     plt.xlabel("epochs")
     plt.ylabel("loss")
@@ -284,31 +283,31 @@ def plot_loss(train_loss, val_loss):
     plt.show()
 
 
-# """====Main===="""
-# if __name__ == "__main__":
-#     print("Proceed to split data :")
-#     folder="./data/img_align_celeba"
-#     train_data, val_data=split_data(folder, seed_nb=40, image_size=(160,144))
-#     print("Test images loaded in train data : ")
-#     display_data_set(train_data, 9)
-#     print("Test images loaded in val data : ")
-#     display_data_set(val_data, 9)
-#     train_or_not=input("Do you want to train a model [y/n] : ")
-#     if train_or_not=="y":
-#         train_new =input("Do you want to train a new model [y/n] : ")
-#         if train_new=="y":
-#             saving_name=input("Choose a name for the model : ")
-#             print("Creation of the model and print the summary : ")
-#             autoencoder=create_autoencoder((160,144,3), latent_dim=252)
-#             train_model(train_data, val_data, autoencoder, 10, 500, saving_name)
-#             visualize_prediction(val_data[0][0], autoencoder, train=False, nbr_images_displayed=8)
-#         else :
-#            file_name = input("Enter the model file name : ")
-#            autoencoder_loaded, encoder, decoder=load_autoencoder_model('model/' + file_name + '.keras')
-#            train_model(train_data, val_data, autoencoder_loaded, 3, 1000, saving_name=file_name)
-#            visualize_prediction(val_data[0][0], autoencoder_loaded, train=False, nbr_images_displayed=8)
-#     else :
-#         file_name = input("Enter the model file name : ")
-#         autoencoder_loaded, encoder, decoder=load_autoencoder_model('model/' + file_name + '.keras')
-#         visualize_prediction(val_data[0][0], autoencoder_loaded, train=False, nbr_images_displayed=8)
-#         test_encoder_decoder(val_data[0][0], encoder, decoder, 8)
+"""====Main===="""
+if __name__ == "__main__":
+    print("Proceed to split data :")
+    folder="./data/img_align_celeba"
+    train_data, val_data=split_data(folder, seed_nb=40, image_size=(128,128), batch_size=128)
+    print("Test images loaded in train data : ")
+    display_data_set(train_data)
+    print("Test images loaded in val data : ")
+    display_data_set(val_data)
+    train_or_not=input("Do you want to train a model [y/n] : ")
+    if train_or_not=="y":
+        train_new =input("Do you want to train a new model [y/n] : ")
+        if train_new=="y":
+            saving_name=input("Choose a name for the model : ")
+            print("Creation of the model and print the summary : ")
+            autoencoder=create_autoencoder((128,128,3), latent_dim=256)
+            train_model(train_data, val_data, autoencoder, 15, 300, saving_name)
+            visualize_prediction(val_data[0][0], autoencoder, train=False, nbr_images_displayed=8)
+        else :
+           file_name = input("Enter the model file name : ")
+           autoencoder_loaded, encoder, decoder=load_autoencoder_model('model/' + file_name + '.keras')
+           train_model(train_data, val_data, autoencoder_loaded, 10, 500 , saving_name=file_name)
+           visualize_prediction(val_data[0][0], autoencoder_loaded, train=False, nbr_images_displayed=8)
+    else :
+        file_name = input("Enter the model file name : ")
+        autoencoder_loaded, encoder, decoder=load_autoencoder_model('model/' + file_name + '.keras')
+        visualize_prediction(val_data[0][0], autoencoder_loaded, train=False, nbr_images_displayed=8)
+        test_encoder_decoder(val_data[0][0], encoder, decoder, 8)
