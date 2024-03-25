@@ -1,18 +1,10 @@
 import numpy as np
 import random
 
-# Use autoencoder to decode the genomes
-def decode_genome(decoder, genome):
-    decoded_image = decoder.predict(genome.reshape(1, 20, 18, 64))
-    reshaped_image = decoded_image.reshape(160, 144, 3)
-    return reshaped_image
-
 # Evaluate the fitness of the decoded images
-def fitness_evaluation(decoder, population, encoded_target_images):
+def fitness_evaluation(population, encoded_target_images):
     fitness_values = []
     for genome in encoded_target_images:
-        # TODO: compare decoded population and target images?
-        # decoded_genome = decode_genome(decoder, genome)
         fitnesses = [calculate_fitness(genome, original_image) for original_image in population]
         fitness = max(fitnesses)
         fitness_values.append(fitness)
@@ -66,9 +58,9 @@ def generate_new_population(parents, population_size, mutation_rate):
     return new_population
 
 # Genetic algorithm function
-def genetic_algorithm(decoder, population, victim_choice, population_size, mutation_rate):
+def genetic_algorithm(population, victim_choice, population_size, mutation_rate):
 
-    fitness_scores = fitness_evaluation(decoder, population, victim_choice)
+    fitness_scores = fitness_evaluation(population, victim_choice)
     parents = select_parents(population, fitness_scores)
     new_population = generate_new_population(parents, population_size, mutation_rate)
 

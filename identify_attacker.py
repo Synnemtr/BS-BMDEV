@@ -4,6 +4,7 @@ import random
 from autoencoder import create_autoencoder, load_autoencoder_model, split_data, display_data_set, visualize_prediction, test_encoder_decoder, train_model
 from genetic_algorithm import genetic_algorithm
 
+chosen_images_history = [] # List to store the images chosen by the user
 
 # Function to train the autoencoder
 # def population_initiation(image_folder, population_size):
@@ -58,7 +59,9 @@ def population_initiation(batch, population_size):
     return init_population
 
 # [temporary] get the user's choice of the image that most resembles the attacker
-def get_victim_choice(images):
+def get_victim_choice(mutated_images, extra_images):
+    global chosen_images_history
+    combined_images = mutated_images + extra_images
     while True:
         choices = input("Enter the number of the image(s) that most resemble the attacker (separated by commas): ").strip()
         if choices.lower() == 'quit':
@@ -70,7 +73,9 @@ def get_victim_choice(images):
         choice = []
         for index in choices:
             try:
-                choice.append(images[index])
+                chosen_image = combined_images[index]
+                choice.append(chosen_image)
+                chosen_images_history.append(chosen_image)
             except IndexError:
                 print("Invalid image number. Please try again.")
                 continue
@@ -85,18 +90,21 @@ def display_image_vectors(images):
         print(img)
 
 # Identify the attacker using genetic algorithm and the autoencoder's encoder and decoder layer's
-def idenfity_attacker(autoencoder, encoder, decoder, batch, population_size, max_iterations, mutation_rate):
-    population = population_initiation(batch, population_size)  # init random population
-    
+def idenfity_attacker(autoencoder, encoder, decoder, image_width, image_height, image_channels, batch, init_size, population_size, max_iterations, mutation_rate):
+    population = population_initiation(batch, init_size)  # init random population
+
     for i in range(max_iterations):
-        victim_choice = get_victim_choice(population)
-        encode_victim_choice = [encoder.predict(image.reshape(1, 160, 144, 3)) for image in victim_choice] #(batch size, height, width, channels)
-        encode_population = [encoder.predict(image.reshape(1, 160, 144, 3)) for image in population]
-        new_population = genetic_algorithm(decoder, encode_population, encode_victim_choice, population_size, mutation_rate)
+        extra_images = 4
+        extra_features = population_initiation(batch, extra_images)
+
+        victim_choice = get_victim_choice(population, extra_features)
+        encode_victim_choice = [encoder.predict(image.reshape(1, image_width, image_height, image_channels)) for image in victim_choice] #(batch size, height, width, channels)
+        encode_population = [encoder.predict(image.reshape(1, image_width, image_height, image_channels)) for image in population]
+        new_population = genetic_algorithm(encode_population, encode_victim_choice, population_size, mutation_rate)
         decoded_new_population = [decoder.predict(image[-1]) for image in new_population]
 
         # display_image_vectors(decoded_new_population)
-        reshaped_population = [np.reshape(img, (160, 144, 3)) for img in decoded_new_population]
+        reshaped_population = [np.reshape(img, (image_width, image_height, image_channels)) for img in decoded_new_population]
         plt.figure(figsize=(10, 10))
         for i, img in enumerate(reshaped_population):
             plt.subplot(int(np.sqrt(len(reshaped_population))), int(np.sqrt(len(reshaped_population))), i + 1)
@@ -111,13 +119,19 @@ def idenfity_attacker(autoencoder, encoder, decoder, batch, population_size, max
 # Main function to run the program
 if __name__ == "__main__":
 
-    population_size = 4
-    max_iterations = 10
-    mutation_rate = 0.1
+    # Static parameters
+    population_size = 4 # number of images to display
+    init_size = 9 # number of images to display in init population
+    max_iterations = 3 # number of iterations to run the genetic algorithm
+
+    mutation_rate = 0.01
+    image_width = 160
+    image_height = 144
+    image_channels = 3
 
     print("Proceed to split data :")
     folder="./data/img_align_celeba"
-    train_data, val_data=split_data(folder, seed_nb=40, image_size=(160,144))
+    train_data, val_data=split_data(folder, seed_nb=40, image_size=(image_width,image_height))
 
     # print("Test images loaded in train data : ")
     # display_data_set(train_data, population_size)
@@ -133,7 +147,7 @@ if __name__ == "__main__":
         encoder.summary()
         decoder.summary()
         autoencoder_loaded.summary()
-        idenfity_attacker(autoencoder_loaded, encoder, decoder, train_data, population_size, max_iterations, mutation_rate)
+        idenfity_attacker(autoencoder_loaded, encoder, decoder, image_width, image_height, image_channels, train_data, init_size, population_size, max_iterations, mutation_rate)
         
         # visualize_prediction(val_data[0][0], autoencoder_loaded, train=False, nbr_images_displayed=8)
         # test_encoder_decoder(val_data[0][0], encoder, decoder, 8)
