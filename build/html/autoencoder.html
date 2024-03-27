@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Autoencoder &mdash; Software development project  documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+      <link rel="stylesheet" href="_static/fonts.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Genetic algorithm" href="genetic_algo.html" />
+    <link rel="prev" title="Welcome to Software development project’s documentation!" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Software development project
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Autoencoder</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#autoencoder.create_autoencoder"><code class="docutils literal notranslate"><span class="pre">create_autoencoder()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#autoencoder.create_decoder"><code class="docutils literal notranslate"><span class="pre">create_decoder()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#autoencoder.create_encoder"><code class="docutils literal notranslate"><span class="pre">create_encoder()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#autoencoder.display_data_set"><code class="docutils literal notranslate"><span class="pre">display_data_set()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#autoencoder.load_autoencoder_model"><code class="docutils literal notranslate"><span class="pre">load_autoencoder_model()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#autoencoder.plot_loss"><code class="docutils literal notranslate"><span class="pre">plot_loss()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#autoencoder.split_data"><code class="docutils literal notranslate"><span class="pre">split_data()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#autoencoder.test_encoder_decoder"><code class="docutils literal notranslate"><span class="pre">test_encoder_decoder()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#autoencoder.train_model"><code class="docutils literal notranslate"><span class="pre">train_model()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#autoencoder.visualize_prediction"><code class="docutils literal notranslate"><span class="pre">visualize_prediction()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="genetic_algo.html">Genetic algorithm</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Software development project</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Autoencoder</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/autoencoder.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-autoencoder">
+<span id="autoencoder"></span><h1>Autoencoder<a class="headerlink" href="#module-autoencoder" title="Link to this heading"></a></h1>
+<p>Module to train and load autoencoder</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="autoencoder.create_autoencoder">
+<span class="sig-prename descclassname"><span class="pre">autoencoder.</span></span><span class="sig-name descname"><span class="pre">create_autoencoder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">latent_dim</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#autoencoder.create_autoencoder" title="Link to this definition"></a></dt>
+<dd><p>Create the layers of the model, compile it and print the resume</p>
+<dl class="simple">
+<dt>Parameters :</dt><dd><p>input_shape (tuples): shape of the inputs
+batch_size (int) : size of batch</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the untrain model</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>autoencoder</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="autoencoder.create_decoder">
+<span class="sig-prename descclassname"><span class="pre">autoencoder.</span></span><span class="sig-name descname"><span class="pre">create_decoder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">shape_before_flattening</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#autoencoder.create_decoder" title="Link to this definition"></a></dt>
+<dd><p>create the decoder model</p>
+<dl class="simple">
+<dt>Parameter :</dt><dd><p>shape_before_flattening (tuple) = shape of the data before flattening in the encoder
+z = the layer using sample function</p>
+</dd>
+<dt>Return :</dt><dd><p>decoder = the decoder model</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="autoencoder.create_encoder">
+<span class="sig-prename descclassname"><span class="pre">autoencoder.</span></span><span class="sig-name descname"><span class="pre">create_encoder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">latent_dim</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#autoencoder.create_encoder" title="Link to this definition"></a></dt>
+<dd><p>create the encoder model</p>
+<dl class="simple">
+<dt>Parameter :</dt><dd><p>input_shape (tuple) : size of the input given to the encoder</p>
+</dd>
+<dt>Return :</dt><dd><p>shape_before_flattening (tuple) = size of the data before flattening
+z = the layer z using the sampling layer
+encoder = the encoder model</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="autoencoder.display_data_set">
+<span class="sig-prename descclassname"><span class="pre">autoencoder.</span></span><span class="sig-name descname"><span class="pre">display_data_set</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#autoencoder.display_data_set" title="Link to this definition"></a></dt>
+<dd><p>Display the 8th first pictures of the 1rst batch of a set of data</p>
+<dl class="simple">
+<dt>Parameters :</dt><dd><p>data (numpy array) : set of image data (train or validation set)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="autoencoder.load_autoencoder_model">
+<span class="sig-prename descclassname"><span class="pre">autoencoder.</span></span><span class="sig-name descname"><span class="pre">load_autoencoder_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#autoencoder.load_autoencoder_model" title="Link to this definition"></a></dt>
+<dd><p>load the encoder and the decoder from an saved autoencoder</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>model_path</strong> (<em>str</em>) – </p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Return :</dt><dd><p>autoencoder_loaded = the full autoencoder model
+encoder = the encoder part of the autoencoder model
+decoder = the decoder part of the autoencoder model</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="autoencoder.plot_loss">
+<span class="sig-prename descclassname"><span class="pre">autoencoder.</span></span><span class="sig-name descname"><span class="pre">plot_loss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">train_loss</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val_loss</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#autoencoder.plot_loss" title="Link to this definition"></a></dt>
+<dd><p>Plot the loss of the model</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>train_loss</strong> (<em>list</em>) – list of the loss value for the training set for each epoch</p></li>
+<li><p><strong>val_loss</strong> (<em>list</em>) – list of the loss value for the validation set for each epoch</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="autoencoder.split_data">
+<span class="sig-prename descclassname"><span class="pre">autoencoder.</span></span><span class="sig-name descname"><span class="pre">split_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">im_fold</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed_nb</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#autoencoder.split_data" title="Link to this definition"></a></dt>
+<dd><p>Proceed to the splitting of the data in a train set and a validation set</p>
+<dl class="simple">
+<dt>Parameters :</dt><dd><p>im_fold (string) : path to the folder containing the pictures
+seed_nb (int) : number of the seed you want to use</p>
+</dd>
+<dt>Return :</dt><dd><p>train_data (keras.src.preprocessing.image.DirectoryIterator): set of the images used to train
+val_data (keras.src.preprocessing.image.DirectoryIterator): set of the images used for validation</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="autoencoder.test_encoder_decoder">
+<span class="sig-prename descclassname"><span class="pre">autoencoder.</span></span><span class="sig-name descname"><span class="pre">test_encoder_decoder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_batch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">decoder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nbr_images_displayed</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#autoencoder.test_encoder_decoder" title="Link to this definition"></a></dt>
+<dd><p>Visualize the results of predictions using encoder and decoder separatly</p>
+<dl class="simple">
+<dt>Parameters :</dt><dd><p>data_batch (Numpy Array) = one batch of a data set
+encoder = the encoder part of the model
+decoder =the decoder part of the model</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="autoencoder.train_model">
+<span class="sig-prename descclassname"><span class="pre">autoencoder.</span></span><span class="sig-name descname"><span class="pre">train_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">train_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nbr_epochs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">steps_per_epoch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">saving_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graph</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#autoencoder.train_model" title="Link to this definition"></a></dt>
+<dd><p>Train the model on a train set and save it</p>
+<dl class="simple">
+<dt>Parameters :</dt><dd><p>train_data = set of data to be train
+val_data = set of data use to validate the model
+model = the compiled model
+nrb_epochs (int) = number of epochs
+steps_pet_epoch (int) = number of batch used per epochs
+graph (boolean) = True if you want to plot the loss plot</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="autoencoder.visualize_prediction">
+<span class="sig-prename descclassname"><span class="pre">autoencoder.</span></span><span class="sig-name descname"><span class="pre">visualize_prediction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_batch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">train</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nbr_images_displayed</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#autoencoder.visualize_prediction" title="Link to this definition"></a></dt>
+<dd><p>Visualize the first results of the model prediction on one batch</p>
+<dl>
+<dt>Parameters :</dt><dd><p>data_batch (NumPy array) = one batch of a data set
+model = the model use to predict
+train (bool) = True if its a batch from a train set</p>
+<blockquote>
+<div><p>False if it’s from a validation set</p>
+</div></blockquote>
+<p>nrb_images_dispalyed (int) = number of images to be displayed</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Welcome to Software development project’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="genetic_algo.html" class="btn btn-neutral float-right" title="Genetic algorithm" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Laetitia Guérout, Théo Berthet, Lucas Bodelle &amp; Synne Trettenes.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
