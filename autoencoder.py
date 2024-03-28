@@ -13,15 +13,17 @@ import tensorflow as tf
 """====Functions===="""
 def split_data(im_fold, seed_nb, image_size, batch_size):
     """
-    Proceed to the splitting of the data in a train set and a validation set
+    Split the data into training and validation sets.
 
-    Parameters :
-        im_fold (string) : path to the folder containing the pictures
-        seed_nb (int) : number of the seed you want to use
+    Parameters:
+        im_fold (str): Path to the folder containing the pictures.
+        seed_nb (int): Seed number to use for reproducibility.
+        image_size (tuple): Size of the images.
+        batch_size (int): Size of the batches.
 
-    Return :
-        train_data (keras.src.preprocessing.image.DirectoryIterator): set of the images used to train
-        val_data (keras.src.preprocessing.image.DirectoryIterator): set of the images used for validation
+    Returns:
+        train_data (keras.preprocessing.image.DirectoryIterator): Training data.
+        val_data (keras.preprocessing.image.DirectoryIterator): Validation data.
     """
     train_augment=ImageDataGenerator(
         rescale=1./255,
@@ -56,7 +58,7 @@ def display_data_set(data):
     Display the 8th first pictures of the 1rst batch of a set of data
 
     Parameters : 
-        data (numpy array) : set of image data (train or validation set)
+        data (numpy.ndarray) : set of image data (train or validation set)
     
     """
     plt.figure(figsize=(10, 10))
@@ -70,6 +72,15 @@ def display_data_set(data):
 
 @tf.function
 def sampling(args):
+    """
+    Sampling function for the latent space.
+
+    Parameters:
+        args (tuple): Mean and log variance of the latent distribution.
+
+    Returns:
+        Tensor: Sampled latent variable.
+    """
     z_mean, z_log_var= args
     epsilon = K.random_normal(shape=(K.shape(z_mean)[0], K.shape(z_mean)[1]))
     return z_mean + K.exp(z_log_var / 2) * epsilon
@@ -82,8 +93,8 @@ def create_encoder(input_shape, latent_dim):
         input_shape (tuple) : size of the input given to the encoder
     
     Return :
-        shape_before_flattening (tuple) = size of the data before flattening
-        z = the layer z using the sampling layer
+        shape_before_flattening (tuple) = shape of the data before flattening
+        z = the latent layer
         encoder = the encoder model
     """
     inputs = layers.Input(shape=input_shape)
@@ -111,11 +122,11 @@ def create_decoder(shape_before_flattening, z):
     create the decoder model
 
     Parameter :
-        shape_before_flattening (tuple) = shape of the data before flattening in the encoder
-        z = the layer using sample function
+        shape_before_flattening (tuple) = Shape of the data before flattening in the encoder
+         z (layers.Layer): Layer using the sampling function.
     
-    Return :
-        decoder = the decoder model
+    Returns:
+        keras.models.Model = the decoder model
     """
     decoder_input = layers.Input(K.int_shape(z)[1:])
     x = layers.Dense(np.prod(shape_before_flattening[1:]), activation='relu')(decoder_input)
@@ -133,14 +144,14 @@ def create_decoder(shape_before_flattening, z):
 
 def create_autoencoder(input_shape, latent_dim):
     """
-    Create the layers of the model, compile it and print the resume
+    Create the autoencoder and print the resume
 
     Parameters :
-        input_shape (tuples): shape of the inputs
-        batch_size (int) : size of batch
+        input_shape (tuple): Shape of the inputs.
+        latent_dim (int): Dimensionality of the latent space.
 
-    Return:
-        autoencoder : the untrain model
+    Returns:
+        keras.models.Model: The untrained autoencoder model.
 
     """
     shape_before_flattening, z_layer, encoder = create_encoder(input_shape, latent_dim)
@@ -165,15 +176,16 @@ def create_autoencoder(input_shape, latent_dim):
 
 def train_model(train_data, val_data, model, nbr_epochs, steps_per_epoch, saving_name , graph=True):
     """
-    Train the model on a train set and save it
+    Train the model on a train set and save it.
 
-    Parameters :
-        train_data = set of data to be train
-        val_data = set of data use to validate the model
-        model = the compiled model
-        nrb_epochs (int) = number of epochs
-        steps_pet_epoch (int) = number of batch used per epochs
-        graph (boolean) = True if you want to plot the loss plot
+    Parameters:
+        train_data: Set of data to train on.
+        val_data: Set of data used for validation.
+        model: The compiled model.
+        nbr_epochs (int): Number of epochs.
+        steps_per_epoch (int): Number of batches used per epoch.
+        saving_name (str): Name to save the model.
+        graph (bool): True to plot the loss plot.
     """
     train_loss=[]
     val_loss=[]
@@ -195,15 +207,13 @@ def train_model(train_data, val_data, model, nbr_epochs, steps_per_epoch, saving
 
 def visualize_prediction(data_batch, model, train, nbr_images_displayed):
     """
-    Visualize the first results of the model prediction on one batch
+    Visualize the first results of the model prediction on a batch
         
-    Parameters :
-        data_batch (NumPy array) = one batch of a data set
-        model = the model use to predict
-        train (bool) = True if its a batch from a train set 
-                    False if it's from a validation set
-        nrb_images_dispalyed (int) = number of images to be displayed 
-
+    Parameters:
+        data_batch (numpy.ndarray): Batch of data.
+        model: The model used for prediction.
+        train (bool): True if the batch is from the training set, False otherwise.
+        nbr_images_displayed (int): Number of images to display.
     """
     pred_batch=model.predict(data_batch)
     fig,ax=plt.subplots(4,4,figsize=(20,8))
@@ -226,10 +236,10 @@ def visualize_prediction(data_batch, model, train, nbr_images_displayed):
 
 def load_autoencoder_model(model_path):
     """
-    load the encoder and the decoder from an saved autoencoder
+    Load the encoder and the decoder from a saved autoencoder
 
     Parameters:
-        model_path (str) = path to the model file
+        model_path (str) = Path to the model file
 
     Return :
         autoencoder_loaded = the full autoencoder model
@@ -243,12 +253,13 @@ def load_autoencoder_model(model_path):
 
 def test_encoder_decoder(data_batch, encoder, decoder, nbr_images_displayed):
     """
-    Visualize the results of predictions using encoder and decoder separatly
+    Test the encoder and decoder separately.
 
-    Parameters :
-        data_batch (Numpy Array) = one batch of a data set
-        encoder = the encoder part of the model
-        decoder =the decoder part of the model
+    Parameters:
+        data_batch (numpy.ndarray): Batch of data.
+        encoder: The encoder part of the model.
+        decoder: The decoder part of the model.
+        nbr_images_displayed (int): Number of images to display.
     """
     encoded_data=encoder.predict(data_batch)
     decoded_data=decoder.predict(encoded_data[-1])
@@ -267,11 +278,11 @@ def test_encoder_decoder(data_batch, encoder, decoder, nbr_images_displayed):
 
 def plot_loss(train_loss, val_loss):
     """
-    Plot the loss of the model
+    Plot the loss of the model.
 
     Parameters:
-        train_loss (list) :  list of the loss value for the training set for each epoch
-        val_loss (list) :  list of the loss value for the validation set for each epoch
+        train_loss (list): List of training loss values.
+        val_loss (list): List of validation loss values.
     """
     plt.plot(train_loss, label='train')
     plt.plot(val_loss, label='Validation')

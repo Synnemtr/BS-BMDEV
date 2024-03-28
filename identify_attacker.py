@@ -1,3 +1,10 @@
+"""
+    Module to perform a genetic attack using autoencoder and genetic algorithm.
+
+    This module provides functions to train an autoencoder, load trained models, split data,
+    display datasets, visualize predictions, and perform a genetic attack to identify attackers.
+"""
+
 import numpy as np
 import matplotlib.pyplot as plt
 import random
@@ -41,6 +48,13 @@ from ui import UserInterface
     # return population_images
 
 def train_autoencoder(train_data, val_data):
+    """
+    Train the autoencoder model.
+
+    Parameters:
+        train_data: Training data.
+        val_data: Validation data.
+    """
     train_new =input("Do you want to train a new model [y/n] : ")
     if train_new=="y":
         saving_name=input("Choose a name for the model : ")
@@ -56,6 +70,16 @@ def train_autoencoder(train_data, val_data):
 
 # Initialize population with random genomes
 def population_initiation(batch, population_size):
+    """
+    Initialize the population with random genomes.
+
+    Parameters:
+        batch: Data batch.
+        population_size: Size of the population.
+
+    Returns:
+        List: Initial population.
+    """
     images, _ = next(batch)
     if population_size > len(images):
         print(f"Population size is greater than the number of images in the batch. Displaying {len(images)} images instead.")
@@ -64,6 +88,19 @@ def population_initiation(batch, population_size):
     return init_population
 
 def identifying_loop(root, ui, encoder, decoder, population, population_size, max_iterations, mutation_rate):
+    """
+    Loop to identify attackers using genetic algorithm.
+
+    Parameters:
+        root: Tkinter root window.
+        ui: User interface object.
+        encoder: Encoder model.
+        decoder: Decoder model.
+        population: Current population.
+        population_size: Size of the population.
+        max_iterations: Maximum number of iterations.
+        mutation_rate: Rate of mutation.
+    """
     for i in range(max_iterations):
         # Checks the status of the choices_validated variable and if the window is still open
         while ui.window_exists and not ui.choices_validated:
@@ -92,6 +129,18 @@ def identifying_loop(root, ui, encoder, decoder, population, population_size, ma
 
 # Identify the attacker using genetic algorithm and the autoencoder's encoder and decoder layer's
 def idenfity_attacker(autoencoder, encoder, decoder, batch, population_size, max_iterations, mutation_rate):
+    """
+    Identify attacker using genetic algorithm.
+
+    Parameters:
+        autoencoder: Autoencoder model.
+        encoder: Encoder model.
+        decoder: Decoder model.
+        batch: Data batch.
+        population_size: Size of the population.
+        max_iterations: Maximum number of iterations.
+        mutation_rate: Rate of mutation.
+    """
     decoded_population = [autoencoder.predict(individual.reshape(1, 128, 128, 3)) for individual in population_initiation(batch, population_size)]  # init random population
     population = [image.reshape(128, 128, 3) for image in decoded_population]
     root = tk.Tk()

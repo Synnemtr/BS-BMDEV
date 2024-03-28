@@ -1,11 +1,36 @@
+"""
+Module: user_interface.py
+
+This module provides a simple user interface for identifying attackers using images.
+
+The UserInterface class initializes a window and adds a label and buttons for selecting images.
+"""
+
 import tkinter as tk
 from PIL import Image, ImageTk
 import numpy as np
 import sys
 
 class UserInterface:
+    """
+    A class to represent the user interface for identifying attackers using images.
 
+    Attributes:
+        root (Tk): The root window of the user interface.
+        population (list): A list containing image arrays representing the population of images.
+        iteration (int): The current iteration of image selection.
+        user_choice (list): A list of integers representing the indices of images selected by the user.
+        choices_validated (bool): A boolean indicating whether the user's choices have been validated.
+        more_iterations (bool): A boolean indicating whether there are more iterations for image selection.
+    """
     def __init__(self, root, population):
+        """
+        Initializes the user interface with a root window and adds necessary widgets.
+
+        Args:
+            root (Tk): The root window of the user interface.
+            population (list): A list containing image arrays representing the population of images.
+        """
         self.root = root
         self.root.title("Attacker identifier")
         self.root.geometry("340x535")
@@ -58,6 +83,12 @@ class UserInterface:
 
     # Define a function to stop the program when the window is closed
     def stop_program(self):
+        """
+        Stop the program when the window is closed.
+
+        This method quits the mainloop of the Tkinter root window and destroys the window.
+        It also updates the status of the window existence flag and prints a message indicating the window closure.
+        """
         self.root.quit()                # stops mainloop
         self.root.destroy()             # this is necessary on Windows to prevent
                                         # Fatal Python Error: PyEval_RestoreThread: NULL tstate
@@ -66,6 +97,16 @@ class UserInterface:
 
     # Define a function to determine the actions performed when the user clicks on an image
     def on_image_click(self, button):
+        """
+        Perform actions when the user clicks on an image.
+
+        Args:
+            button (Button): The button widget representing the clicked image.
+
+        This method retrieves the number associated with the clicked image button and
+        updates the user's choice list accordingly. It also updates the label to display
+        the images that the user has clicked on.
+        """
         image_number = int(button.cget('text'))
         if image_number not in self.user_choice:
             self.user_choice.append(image_number)
@@ -73,6 +114,12 @@ class UserInterface:
 
     # Define a function to determine the actions performed when the user clicks on the "Validate" button
     def on_validate_click(self):
+        """
+        Perform actions when the user clicks on the "Validate" button.
+
+        This method checks if the user has selected at least one image.
+        If not, it displays an error message. Otherwise, it sets the choices_validated flag to True.
+        """
         if len(self.user_choice) == 0:
             self.error_label = tk.Label(self.root, text="You must select at least one image.", foreground="red")
             self.error_label.grid(row=5, column=0, columnspan=2)
@@ -83,6 +130,18 @@ class UserInterface:
     
     # Define a function to display the new images after the user has validated their choice
     def display_new_images(self, new_population):
+        """
+        Display new images after the user has validated their choice.
+
+        Args:
+            new_population (list): A list containing new image arrays representing the population of images.
+
+        This method updates the population of images with the new population.
+        It resets the user's choice list, sets the choices_validated flag to False,
+        and updates the buttonClickedLabel to display an empty list of clicked images.
+        Additionally, it updates the iteration count and the labels and commands of image buttons
+        to reflect the changes in the population.
+        """
         self.population = new_population
         self.user_choice = []
         self.choices_validated = False
@@ -158,6 +217,22 @@ class UserInterface:
     #     self.root.mainloop()
 
     def end_screen(self, population):
+        """
+        Display the end screen with the final image of the attacker.
+
+        Args:
+            population (list): A list containing the final image array of the attacker.
+
+        This method prepares and displays the end screen of the user interface.
+        It sets the final individual's image, resets various attributes, and destroys
+        the widgets related to image selection. It then configures the main label to
+        inform the user about reaching the maximum number of iterations and displays
+        the final image of the attacker. Additionally, it creates a button to close
+        the application.
+
+        Note:
+            This method assumes the root window is already initialized and running.
+        """
         self.final_individual = population
         # self.population_if_continue = population_if_continue
         self.user_choice = []
@@ -188,6 +263,17 @@ class UserInterface:
         self.root.mainloop()
 
 def main():
+    """
+    Main function to initialize the user interface and run the application.
+
+    This function serves as the entry point of the application. It creates the root
+    window using Tkinter, generates random image data, initializes the user interface
+    with the generated population of images, and starts the main event loop to handle
+    user interactions.
+
+    The main purpose of this function is to start the graphical user interface (GUI)
+    application and ensure its smooth execution by running the main event loop.
+    """
     root = tk.Tk()
 
     # Generate some random image data

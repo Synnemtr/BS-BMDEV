@@ -16,7 +16,15 @@ import os
 
 
 class Logicielprincipal(tk.Frame) : 
+    """Class representing the main software interface."""
+
     def __init__(self,master=None) : 
+        """
+        Initialize the MainSoftware class.
+
+        Args:
+            master (Tk object): The master Tk object.
+        """
         super().__init__(master)
         self.master = master
         self.pack()
@@ -30,7 +38,11 @@ class Logicielprincipal(tk.Frame) :
         
 
     def menu_entree(self) : #Ceci est les composants de notre Menu
+        """
+        Display the entry menu.
 
+        This method initializes and displays the entry menu of the software.
+        """
         #initialise le nouveau menu 
         self.master.withdraw() # permet de cacher la fenêtre principal
         nouvelle_fenetre_menu = Toplevel(self.master)
@@ -41,6 +53,7 @@ class Logicielprincipal(tk.Frame) :
 
 
         def menu_sortie() :  #fonction pour enlever la fenêtre Menu 
+            """Function to close the menu window and proceed to the main software."""
             self.number_image = choix_nb_image_var.var.get() #on récupère le nombre d'image qui a été choisi
             if self.number_image != 0 : # on vérifie que l'utilisateur a choisi un nb de photo 
                 nouvelle_fenetre_menu.destroy()
@@ -64,14 +77,22 @@ class Logicielprincipal(tk.Frame) :
         #ici est un concept pour un menu déroulant (pas important) , je le mettrai plus sur le vrai logiciel 
                 
         class MenuDeroulant(tk.Frame) : 
+            """Class representing a dropdown menu."""
+
             def __init__(self,master=None) : 
+                """
+                Initialize the DropdownMenu class.
+
+                Args:
+                    master (Tk object): The master Tk object.
+                """
                 super().__init__(master)
                 self.master = master
                 self.pack()
                 self.create_widgets()
                 
             def create_widgets(self) : 
-
+                """Create the widgets for the dropdown menu."""
                 #création de la zone de contenu caché 
                 self.menu_contenu = Frame(self.master,bg = "lightgrey" , width = 200)
                 self.menu_contenu.pack_propagate(False)
@@ -92,16 +113,18 @@ class Logicielprincipal(tk.Frame) :
                 self.items2.pack(pady = 5)
 
             def move_contenu(self) :
-                        step = 1
-                        position_x = self.menu_contenu.winfo_x() 
-                        if position_x != 0 : 
-                            self.menu_contenu.place(x= position_x + step)
-                            if (position_x + step) == 0 : 
-                                return
+                """Move the content of the menu."""
+                step = 1
+                position_x = self.menu_contenu.winfo_x() 
+                if position_x != 0 : 
+                    self.menu_contenu.place(x= position_x + step)
+                    if (position_x + step) == 0 : 
+                        return
                             
-                            self.master.after(2,self.toggle_menu)      
+                    self.master.after(2,self.toggle_menu)      
 
             def toggle_menu(self) : 
+                """Toggle the visibility of the menu."""
                 print("test")
                 if self.menu_contenu.winfo_x() < 0 : 
                     self.move_contenu()    
@@ -112,14 +135,22 @@ class Logicielprincipal(tk.Frame) :
 
         #code qui s'occupe de la case pour le choix de l'algo 
         class List_box(tk.Frame) : 
-            def __init__(self,master=None) : 
+            """Class representing a list box."""
+
+            def __init__(self,master=None) :
+                """
+                Initialize the ListBox class.
+
+                Args:
+                    master (Tk object): The master Tk object.
+                """ 
                 super().__init__(master)
                 self.master = master
                 self.pack()
                 self.create_widgets()
 
             def create_widgets(self) : 
-               
+                """Create the widgets for the list box."""
                 liste_box_A_frame = Frame(self.master,bg = "White" , width=500 , height = 100) # frame blanc
                 self.list_box_A = Listbox(self.master , height = 5) # la liste box
                 choix_selection = Label(self.master , text = "Aucun" , width=20,height=2 , bg = "White") # Le texte pour le choix algo
@@ -136,6 +167,7 @@ class Logicielprincipal(tk.Frame) :
                 # permet d'actualiser le nom du label quand on choisi un model dans notre liste box 
 
                 def update_label() : 
+                    """Update the label text when selecting a model."""
                     selected_index = self.list_box_A.curselection()
                     if selected_index : 
                         selected_value = self.list_box_A.get(selected_index[0])
@@ -149,13 +181,22 @@ class Logicielprincipal(tk.Frame) :
          # même principe que la liste box pour l'algo
                 
         class choice_genetic(tk.Frame) : 
+            """Class representing the genetic choice."""
+
             def __init__(self,master=None) : 
+                """
+                Initialize the GeneticChoice class.
+
+                Args:
+                    master (Tk object): The master Tk object.
+                """
                 super().__init__(master)
                 self.master = master
                 self.pack()
                 self.create_widgets()
 
-            def create_widgets(self) : 
+            def create_widgets(self) :
+                """Create the widgets for the genetic choice.""" 
                 liste_box_G_frame = Frame(self.master,bg = "White" , width=500 , height = 100)
                 choix_selection_G = Label(self.master , text = "Aucun" , width=20,height=2 , bg = "White")
                 choix_selection_G.place(x= 500  , y= 380)
@@ -167,6 +208,7 @@ class Logicielprincipal(tk.Frame) :
                     self.list_box_G.insert(END,item)
 
                 def update_label() : 
+                    """Update the label text when selecting an option."""
                     selected_index = self.list_box_G.curselection()
                     if selected_index : 
                         selected_value = self.list_box_G.get(selected_index[0])
@@ -177,7 +219,15 @@ class Logicielprincipal(tk.Frame) :
         liste_box_genetic = choice_genetic(master = nouvelle_fenetre_menu)
                 
         class choix_nb_image(tk.Frame) : # ici la fonction pour choisir le nombre d'image
+            """Class representing the function to choose the number of images."""
+
             def __init__(self,master=None) : 
+                """
+                Initialize the choix_nb_image class.
+
+                Args:
+                    master (Tk object): The master Tk object.
+                """
                 super().__init__(master)
                 self.master = master
                 self.pack()
@@ -186,6 +236,7 @@ class Logicielprincipal(tk.Frame) :
                 self.create_widgets()
             
             def create_widgets(self) : 
+                """Create the widgets for choosing the number of images."""
                 button_4 = Radiobutton(self.master,text="4 images",variable =self.var , value = 4)
                 button_8 = Radiobutton(self.master,text = "9 images", variable = self.var , value = 9)
                 button_12 = Radiobutton(self.master,text = "16 images" , variable = self.var , value = 16)
@@ -198,7 +249,18 @@ class Logicielprincipal(tk.Frame) :
         
 
     def interface_object(self) : # Ceci est les composants de notre interface principal
-        #préparation de l'image pour le background du logiciel 
+        #préparation de l'image pour le background du logiciel
+        """
+        Sets up the main interface components.
+
+        This method prepares the background image for the software interface,
+        places the necessary frames and labels, loads and displays images
+        based on the number of selected images, creates buttons for functionality,
+        and sets up the canvas for the red and green buttons.
+
+        Returns:
+            None
+        """
         background_image_1 = Image.open("./template_doc/vector_background.jpg")
         background_image_1 = background_image_1.resize((1200,800) , Image.LANCZOS)
         background_image_2 = ImageTk.PhotoImage(background_image_1)
@@ -431,6 +493,12 @@ class Logicielprincipal(tk.Frame) :
 
 
     def choice_path_image(self) : # fonction pour choisir une photo aléatoire dans le dossier
+        """
+        Selects a random image file path from a specified directory.
+
+        Returns:
+            str: The file path of the randomly selected image.
+        """
         nombre_alea = str(random.randint(1,202599)) #choisi un nombre entre 1 et 200 000 
         while len(nombre_alea) < 6 : 
             nombre_alea = "0" + nombre_alea # si on a choisi 478 , il faut 3 zéros devant 478 pour le path de l'image 000478
@@ -440,6 +508,18 @@ class Logicielprincipal(tk.Frame) :
 
 
     def load_and_display_image(self,image_path,frame,resize,i) : #fonction pour charger les images dans un Frame pré-définit
+        """
+        Loads and displays an image in a specified frame.
+
+        Args:
+            image_path (str): The file path of the image to be loaded.
+            frame (Frame): The frame where the image will be displayed.
+            resize (list): A list containing the width and height for resizing the image.
+            i (int): The index of the frame in the list of frames.
+
+        Returns:
+            None
+        """
         pil_image = Image.open(image_path) # on charge l'image
         if len(resize) != 0 : #on check si la liste resize est vite , si non , on resize avec x  et y 
             pil_image = pil_image.resize((resize[0],resize[1]),Image.LANCZOS)
@@ -457,6 +537,16 @@ class Logicielprincipal(tk.Frame) :
     
 
     def select_frame(self,frame,label) : # fonction pour la sélection de Frame (couleur Rouge)
+        """
+        Selects a frame either by highlighting it in red or green.
+
+        Args:
+            frame (Frame): The frame to be selected.
+            label (Label): The label associated with the frame.
+
+        Returns:
+            None
+        """
         if self.red == True :  #dépend si on est en mode algo génétique ou choix final 
     
             i = 0
@@ -484,6 +574,12 @@ class Logicielprincipal(tk.Frame) :
                 self.frame_confirm.append(label)
         
     def fonction_reset_photo(self) : #Fonction permet de changer les photos qui ont été précèdemment sélectionnées.
+        """
+        Resets the selected photos by loading new random images.
+
+        Returns:
+            None
+        """
         i = 0
         for item in self.liste_frame : 
             self.load_and_display_image(self.choice_path_image() , item[0] , self.resize , i)
@@ -496,6 +592,15 @@ class Logicielprincipal(tk.Frame) :
 
 
     def validate(self,P) : #Fonction pour éviter qu'autre chose soit écrit (entre 0 et 100) dans la case écriture 
+        """
+        Validates the input in the spinbox to ensure it is within the range of 0 to 100.
+
+        Args:
+            P (str): The input string.
+
+        Returns:
+            bool: True if the input is valid, False otherwise.
+        """
         try : 
             value = int(P)
             if value >= 0 and value <= 100 : 
@@ -507,7 +612,12 @@ class Logicielprincipal(tk.Frame) :
 
 
     def simulate_chargement(self) : #Fonction permettant de faire la fenêtre de chargement 
-        
+        """
+        Simulates a loading window with a progress bar.
+
+        Returns:
+            None
+        """
         self.master.withdraw() #on fait disparaitre l'ancienne fenetre
         
         nouvelle_fenetre = Toplevel(self.master) #nouvelle fenetre (celle du loading)
@@ -545,6 +655,12 @@ class Logicielprincipal(tk.Frame) :
 
 
     def canvas_red_click(self) : # fonction sur le click du bouton rouge
+        """
+        Handles the click event for the red button.
+
+        Returns:
+            None
+        """
         if self.canvas_red.itemcget(self.cercle_rouge,"fill") == "lightgray" : # si le bouton rouge était en gris
 
             self.canvas_red.itemconfig(self.cercle_rouge,fill="red") #on colore le bouton en rouge
@@ -557,6 +673,12 @@ class Logicielprincipal(tk.Frame) :
 
     def canvas_vert_click(self) : # idem qu'avec le bouton rouge sauf pour le bouton vert 
         # même principe qu'en haut
+        """
+        Handles the click event for the green button.
+
+        Returns:
+            None
+        """
         if self.canvas_vert.itemcget(self.cercle_vert,"fill") == "lightgray" : 
             self.canvas_vert.itemconfig(self.cercle_vert,fill="green")
             self.canvas_red.itemconfig(self.cercle_rouge,fill="lightgray")
@@ -569,9 +691,15 @@ class Logicielprincipal(tk.Frame) :
             self.red = False
 
     def final_choice(self) : #permet de copier l'image sélectionner par un vert pour l'afficher sur le Frame meurtrier
-        """Manipulation bizarre ici , en gros il est difficile de retrouver l'image sous forme PIL à partir du Label
-        j'ai stocké les path des label des liste_frame , puis j'arrive à retrouver le nom du frame issue du label 
-        ainsi avec ce numéro de frame , j'arrive à retrouver l'index pour le path du frame correspondant """
+        """
+        Copies the image selected with a green border to the murderer frame.
+
+        Returns:
+            None
+        """
+        #Manipulation bizarre ici , en gros il est difficile de retrouver l'image sous forme PIL à partir du Label
+        #j'ai stocké les path des label des liste_frame , puis j'arrive à retrouver le nom du frame issue du label 
+        #ainsi avec ce numéro de frame , j'arrive à retrouver l'index pour le path du frame correspondant 
 
         print(str(self.frame_confirm[0]))
 
@@ -603,6 +731,12 @@ class Logicielprincipal(tk.Frame) :
             self.bool_finish = True # Le tueur a été confirmer on peut avant quitter l'appli
         
     def finish(self) : #permet de quitter la fenetre ( Fin )
+        """
+        Quits the application if the murderer has been confirmed.
+
+        Returns:
+            None
+        """
         if self.bool_finish == True : #permet d'éviter qu'on quitte l'appli tant qu'on a pas trouver le tueur 
              self.master.quit()
 

@@ -46,9 +46,16 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="autoencoder.html">Autoencoder</a></li>
 <li class="toctree-l1"><a class="reference internal" href="genetic_algo.html">Genetic algorithm</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Identify attacker</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Identify attacker</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#identify_attacker.idenfity_attacker"><code class="docutils literal notranslate"><span class="pre">idenfity_attacker()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#identify_attacker.identifying_loop"><code class="docutils literal notranslate"><span class="pre">identifying_loop()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#identify_attacker.population_initiation"><code class="docutils literal notranslate"><span class="pre">population_initiation()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#identify_attacker.train_autoencoder"><code class="docutils literal notranslate"><span class="pre">train_autoencoder()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="ui.html">Graphical Interface</a></li>
 </ul>
 
@@ -78,6 +85,82 @@
              
   <section id="module-identify_attacker">
 <span id="identify-attacker"></span><h1>Identify attacker<a class="headerlink" href="#module-identify_attacker" title="Link to this heading"></a></h1>
+<p>Module to perform a genetic attack using autoencoder and genetic algorithm.</p>
+<p>This module provides functions to train an autoencoder, load trained models, split data,
+display datasets, visualize predictions, and perform a genetic attack to identify attackers.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="identify_attacker.idenfity_attacker">
+<span class="sig-prename descclassname"><span class="pre">identify_attacker.</span></span><span class="sig-name descname"><span class="pre">idenfity_attacker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">autoencoder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">decoder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">population_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_iterations</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mutation_rate</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#identify_attacker.idenfity_attacker" title="Link to this definition"></a></dt>
+<dd><p>Identify attacker using genetic algorithm.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>autoencoder</strong> – Autoencoder model.</p></li>
+<li><p><strong>encoder</strong> – Encoder model.</p></li>
+<li><p><strong>decoder</strong> – Decoder model.</p></li>
+<li><p><strong>batch</strong> – Data batch.</p></li>
+<li><p><strong>population_size</strong> – Size of the population.</p></li>
+<li><p><strong>max_iterations</strong> – Maximum number of iterations.</p></li>
+<li><p><strong>mutation_rate</strong> – Rate of mutation.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="identify_attacker.identifying_loop">
+<span class="sig-prename descclassname"><span class="pre">identify_attacker.</span></span><span class="sig-name descname"><span class="pre">identifying_loop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ui</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">decoder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">population</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">population_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_iterations</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mutation_rate</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#identify_attacker.identifying_loop" title="Link to this definition"></a></dt>
+<dd><p>Loop to identify attackers using genetic algorithm.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>root</strong> – Tkinter root window.</p></li>
+<li><p><strong>ui</strong> – User interface object.</p></li>
+<li><p><strong>encoder</strong> – Encoder model.</p></li>
+<li><p><strong>decoder</strong> – Decoder model.</p></li>
+<li><p><strong>population</strong> – Current population.</p></li>
+<li><p><strong>population_size</strong> – Size of the population.</p></li>
+<li><p><strong>max_iterations</strong> – Maximum number of iterations.</p></li>
+<li><p><strong>mutation_rate</strong> – Rate of mutation.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="identify_attacker.population_initiation">
+<span class="sig-prename descclassname"><span class="pre">identify_attacker.</span></span><span class="sig-name descname"><span class="pre">population_initiation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">population_size</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#identify_attacker.population_initiation" title="Link to this definition"></a></dt>
+<dd><p>Initialize the population with random genomes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>batch</strong> – Data batch.</p></li>
+<li><p><strong>population_size</strong> – Size of the population.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Initial population.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="identify_attacker.train_autoencoder">
+<span class="sig-prename descclassname"><span class="pre">identify_attacker.</span></span><span class="sig-name descname"><span class="pre">train_autoencoder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">train_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val_data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#identify_attacker.train_autoencoder" title="Link to this definition"></a></dt>
+<dd><p>Train the autoencoder model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>train_data</strong> – Training data.</p></li>
+<li><p><strong>val_data</strong> – Validation data.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 
 

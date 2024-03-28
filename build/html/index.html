@@ -21,7 +21,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Autoencoder" href="autoencoder.html" /> 
+    <link rel="next" title="Installation tutorial" href="tutorial.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -45,6 +45,8 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Installation tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="software_tutorial.html">Getting started with our Software</a></li>
 <li class="toctree-l1"><a class="reference internal" href="autoencoder.html">Autoencoder</a></li>
 <li class="toctree-l1"><a class="reference internal" href="genetic_algo.html">Genetic algorithm</a></li>
 <li class="toctree-l1"><a class="reference internal" href="identify_attacker.html">Identify attacker</a></li>
@@ -77,9 +79,13 @@
              
   <section id="welcome-to-software-development-project-s-documentation">
 <h1>Welcome to Software development project’s documentation!<a class="headerlink" href="#welcome-to-software-development-project-s-documentation" title="Link to this heading"></a></h1>
+<p>Our software aims to help victims portray a culprit using an autoencoder model train on the CelebA dataset and a genetic algorithm.
+Here you can find a tutorial in order to understand how to use our software, but also information about the different modules and functions created for this project.</p>
 <div class="toctree-wrapper compound">
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Installation tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="software_tutorial.html">Getting started with our Software</a></li>
 <li class="toctree-l1"><a class="reference internal" href="autoencoder.html">Autoencoder</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="autoencoder.html#autoencoder.create_autoencoder"><code class="docutils literal notranslate"><span class="pre">create_autoencoder()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="autoencoder.html#autoencoder.create_decoder"><code class="docutils literal notranslate"><span class="pre">create_decoder()</span></code></a></li>
@@ -87,15 +93,34 @@
 <li class="toctree-l2"><a class="reference internal" href="autoencoder.html#autoencoder.display_data_set"><code class="docutils literal notranslate"><span class="pre">display_data_set()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="autoencoder.html#autoencoder.load_autoencoder_model"><code class="docutils literal notranslate"><span class="pre">load_autoencoder_model()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="autoencoder.html#autoencoder.plot_loss"><code class="docutils literal notranslate"><span class="pre">plot_loss()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="autoencoder.html#autoencoder.sampling"><code class="docutils literal notranslate"><span class="pre">sampling()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="autoencoder.html#autoencoder.split_data"><code class="docutils literal notranslate"><span class="pre">split_data()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="autoencoder.html#autoencoder.test_encoder_decoder"><code class="docutils literal notranslate"><span class="pre">test_encoder_decoder()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="autoencoder.html#autoencoder.train_model"><code class="docutils literal notranslate"><span class="pre">train_model()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="autoencoder.html#autoencoder.visualize_prediction"><code class="docutils literal notranslate"><span class="pre">visualize_prediction()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="genetic_algo.html">Genetic algorithm</a></li>
-<li class="toctree-l1"><a class="reference internal" href="identify_attacker.html">Identify attacker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="genetic_algo.html">Genetic algorithm</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="genetic_algo.html#genetic_algorithm.calculate_fitness"><code class="docutils literal notranslate"><span class="pre">calculate_fitness()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="genetic_algo.html#genetic_algorithm.crossover"><code class="docutils literal notranslate"><span class="pre">crossover()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="genetic_algo.html#genetic_algorithm.decode_genome"><code class="docutils literal notranslate"><span class="pre">decode_genome()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="genetic_algo.html#genetic_algorithm.fitness_evaluation"><code class="docutils literal notranslate"><span class="pre">fitness_evaluation()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="genetic_algo.html#genetic_algorithm.generate_new_population"><code class="docutils literal notranslate"><span class="pre">generate_new_population()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="genetic_algo.html#genetic_algorithm.genetic_algorithm"><code class="docutils literal notranslate"><span class="pre">genetic_algorithm()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="genetic_algo.html#genetic_algorithm.mutate_genome"><code class="docutils literal notranslate"><span class="pre">mutate_genome()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="genetic_algo.html#genetic_algorithm.select_parents"><code class="docutils literal notranslate"><span class="pre">select_parents()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="identify_attacker.html">Identify attacker</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="identify_attacker.html#identify_attacker.idenfity_attacker"><code class="docutils literal notranslate"><span class="pre">idenfity_attacker()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="identify_attacker.html#identify_attacker.identifying_loop"><code class="docutils literal notranslate"><span class="pre">identifying_loop()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="identify_attacker.html#identify_attacker.population_initiation"><code class="docutils literal notranslate"><span class="pre">population_initiation()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="identify_attacker.html#identify_attacker.train_autoencoder"><code class="docutils literal notranslate"><span class="pre">train_autoencoder()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="ui.html">Graphical Interface</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="ui.html#ui.UserInterface"><code class="docutils literal notranslate"><span class="pre">UserInterface</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="ui.html#ui.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="ui.html#projet_interface_class.Logicielprincipal"><code class="docutils literal notranslate"><span class="pre">Logicielprincipal</span></code></a></li>
 </ul>
 </li>
@@ -115,7 +140,7 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="autoencoder.html" class="btn btn-neutral float-right" title="Autoencoder" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="tutorial.html" class="btn btn-neutral float-right" title="Installation tutorial" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
