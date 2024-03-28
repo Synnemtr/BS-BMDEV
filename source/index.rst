@@ -6,7 +6,7 @@
 Welcome to Software development project's documentation!
 ========================================================
 
-Our software aims to help victims portray a culprit using an autoencoder model train on the CelebA dataset and a genetic algorithm.
+Our software aims to help victims portray a culprit using an autoencoder model trained on the CelebA dataset and a genetic algorithm.
 Here you can find a tutorial in order to understand how to use our software, but also information about the different modules and functions created for this project. 
 
 
