@@ -4,17 +4,24 @@
 
 ## The autoencoder
 
-## The Genetic algorithm
-This Python script employs a genetic algorithm to generate images that closely resemble a target image. The genetic algorithm, inspired by the process of natural selection, is used as an optimization technique to find the best solution to a problem.
+## The Genetic algorithm (Image Processing)
+This Python code includes three different implementations of genetic algorithms for image processing. Each algorithm uses a different fitness function to evaluate the quality of the images, and different methods for parent selection, crossover, mutation, and new population generation.
 
-The script starts by initializing a population of random genomes, each representing a potential solution - in this case, an image. These genomes are decoded into images using an autoencoder. The fitness of each image in the population is then evaluated based on how closely it resembles the target image. This is done by comparing the mean squared error between the target image and the generated image.
+Genetic Algorithm with Mean Squared Error (MSE)
+This algorithm uses the Mean Squared Error (MSE) as the fitness function. MSE is a popular method to measure the error of an estimator and is calculated as the average squared difference between the estimated values and the actual value. In this context, a lower MSE value indicates a better fit.
 
-The algorithm then enters a loop where it continually selects the best genomes based on their fitness scores, uses them to generate a new population, and introduces random mutations to create variations. This process of selection, crossover, and mutation is repeated for a specified number of iterations to continually refine the solutions.
+For parent selection, this algorithm selects the best genomes based on the lowest fitness score. It uses single point crossover for mating and normal distribution for mutation. The new population is generated with elitism, meaning the best individuals from the previous generation are included in the new population.
 
-A unique aspect of this script is the inclusion of a human-in-the-loop (HITL) function, which allows a human user to interactively select the image that most closely resembles the target image. This adds a level of subjective judgment to the otherwise purely mathematical optimization process.
+Genetic Algorithm with Peak Signal-to-Noise Ratio (PSNR)
+This algorithm uses the Peak Signal-to-Noise Ratio (PSNR) as the fitness function. PSNR is an engineering term for the ratio between the maximum possible power of a signal and the power of corrupting noise that affects the fidelity of its representation. In this context, a higher PSNR value indicates a better fit.
 
-The script concludes by setting parameters for the genetic algorithm, such as the size of the population, the maximum number of iterations, and the mutation rate, and then running the algorithm. It also loads a database of images that are used to initialize the population of genomes.
+For parent selection, this algorithm selects the best genomes based on the highest fitness score. It uses two-point crossover for mating and bit flip mutation for mutation. The new population is generated without elitism.
 
-For the moment the code uses a dummy autoencoder and data read from the list_attr_celeba.csv-file. 
+Genetic Algorithm with Structural Similarity Index (SSIM)
+This algorithm uses the Structural Similarity Index (SSIM) as the fitness function. SSIM is a method for comparing similarities between two images. The SSIM index is a full reference metric; in other words, the measurement or prediction of image quality is based on an initial uncompressed or distortion-free image as reference. In this context, a higher SSIM value indicates a better fit.
+
+For parent selection, this algorithm uses roulette wheel selection, where the probability of an individual being selected is proportional to its fitness score. It uses uniform crossover for mating and bit flip mutation for mutation. The new population is generated without elitism.
+
+Each of these algorithms can be used depending on the specific requirements of your image processing task.
 
 ## UI
