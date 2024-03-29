@@ -2,6 +2,12 @@
 
 ## How to run the project
 
+Open Docker Desktop on your computer. In the Dockerfile in this directory, put the name of the file that should be run when using the `./run.sh` command.
+
+Make `run.sh` executable: `chmod +x run.sh`
+
+Run `./run.sh`
+
 ## The autoencoder
 
 ## The Genetic algorithm (Image Processing)
