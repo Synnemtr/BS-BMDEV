@@ -6,7 +6,6 @@ from genetic_algorithm import genetic_algorithm_with_mse, genetic_algorithm_with
 
 chosen_images_history = [] # List to store the images chosen by the user
 
-# Function to train the autoencoder
 # def population_initiation(image_folder, population_size):
     # folder = image_folder + "/small_set"
     # all_files = [f for f in os.listdir(folder) if f.endswith('.jpg')]
@@ -26,18 +25,20 @@ chosen_images_history = [] # List to store the images chosen by the user
     # plt.show()
 
     # return population_images
-def train_autoencoder(train_data, val_data):
+
+# Function to train the autoencoder
+def train_autoencoder(train_data, val_data, image_width, image_height):
     train_new =input("Do you want to train a new model [y/n] : ")
     if train_new=="y":
         saving_name=input("Choose a name for the model : ")
         print("Creation of the model and print the summary : ")
-        autoencoder=create_autoencoder((160,144,3), latent_dim=252)
-        train_model(train_data, val_data, autoencoder, 10, 500, saving_name)
+        autoencoder=create_autoencoder((image_width,image_height,3), latent_dim=256)
+        train_model(train_data, val_data, autoencoder, 15, 300, saving_name)
         visualize_prediction(val_data[0][0], autoencoder, train=False, nbr_images_displayed=8)
     else :
         file_name = input("Enter the model file name : ")
         autoencoder_loaded, encoder, decoder=load_autoencoder_model('model/' + file_name + '.keras')
-        train_model(train_data, val_data, autoencoder_loaded, 3, 1000, saving_name=file_name)
+        train_model(train_data, val_data, autoencoder_loaded, 10, 500 , saving_name=file_name)
         visualize_prediction(val_data[0][0], autoencoder_loaded, train=False, nbr_images_displayed=8)
 
 # Initialize population with random genomes
@@ -147,13 +148,13 @@ if __name__ == "__main__":
     max_iterations = 3 # number of iterations to run the genetic algorithm
 
     mutation_rate = 0.01
-    image_width = 160
-    image_height = 144
+    image_width = 128
+    image_height = 128
     image_channels = 3
 
     print("Proceed to split data :")
     folder="./data/img_align_celeba"
-    train_data, val_data=split_data(folder, seed_nb=40, image_size=(image_width,image_height))
+    train_data, val_data=split_data(folder, seed_nb=40, image_size=(image_width,image_height), batch_size=128)
 
     # print("Test images loaded in train data : ")
     # display_data_set(train_data, population_size)
@@ -162,12 +163,11 @@ if __name__ == "__main__":
     train_or_not=input("Do you want to train a model [y/n] : ")
 
     if train_or_not=="y":
-        train_autoencoder(train_data, val_data)
+        train_autoencoder(train_data, val_data, image_width, image_height)
     else :
         file_name = input("Enter the model file name : ")
         autoencoder_loaded, encoder, decoder=load_autoencoder_model('model/' + file_name + '.keras')
         decoder.summary()
         idenfity_attacker(autoencoder_loaded, encoder, decoder, image_width, image_height, image_channels, train_data, init_size, population_size, extra_images_generated, max_iterations, mutation_rate)
-        
         # visualize_prediction(val_data[0][0], autoencoder_loaded, train=False, nbr_images_displayed=8)
         # test_encoder_decoder(val_data[0][0], encoder, decoder, 8)
