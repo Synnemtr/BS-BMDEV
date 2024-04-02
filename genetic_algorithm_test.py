@@ -1,5 +1,5 @@
 import random
-import matplotlib as plt
+import matplotlib.pyplot as plt
 import numpy as np
 from scipy.spatial import distance
 import time
@@ -55,8 +55,8 @@ def compare_diversity_of_solutions(algorithms, encoder, decoder, image_width, im
             decoded_new_population = [decoder.predict(image[-1]) for image in new_population]
             population = decoded_new_population
 
-        # Compute the diversity of solutions
-        diversity = np.mean(distance.pdist(np.array(population)))
+        population_2d = np.array(population).reshape(-1, 1)
+        diversity = np.mean(distance.pdist(population_2d))
 
         results[algorithm.__name__] = {
             'diversity_of_solutions': diversity,
@@ -136,24 +136,24 @@ if __name__ == "__main__":
     autoencoder_loaded, encoder, decoder=load_autoencoder_model('model/test_model.keras')
 
     algorithms = [genetic_algorithm_with_mse, genetic_algorithm_with_psnr, genetic_algorithm_with_ssim]
-    avg_fitness_scores = compare_average_fitness_scores(algorithms, encoder, decoder, image_width, image_height, image_channels, train_data, population_size, max_iterations, mutation_rate)
-    diversity_of_solutions = compare_diversity_of_solutions(algorithms, encoder, decoder, image_width, image_height, image_channels, train_data, population_size, max_iterations, mutation_rate)
-    computational_efficiency = compare_computational_efficiency(algorithms, encoder, decoder, image_width, image_height, image_channels, train_data, population_size, max_iterations, mutation_rate)
+    print(compare_average_fitness_scores(algorithms, encoder, decoder, image_width, image_height, image_channels, train_data, population_size, max_iterations, mutation_rate))
+    print(compare_diversity_of_solutions(algorithms, encoder, decoder, image_width, image_height, image_channels, train_data, population_size, max_iterations, mutation_rate))
+    print(compare_computational_efficiency(algorithms, encoder, decoder, image_width, image_height, image_channels, train_data, population_size, max_iterations, mutation_rate))
 
     # display the results
-    fig, axs = plt.subplots(3, 1, figsize=(10, 15))
+    # fig, axs = plt.subplots(3, 1, figsize=(10, 15))
 
-    axs[0].bar(avg_fitness_scores.keys(), [v['average_fitness_score'] for v in avg_fitness_scores.values()])
-    axs[0].set_title('Average Fitness Scores')
-    axs[0].set_ylabel('Fitness Score')
+    # axs[0].bar(avg_fitness_scores.keys(), [v['average_fitness_score'] for v in avg_fitness_scores.values()])
+    # axs[0].set_title('Average Fitness Scores')
+    # axs[0].set_ylabel('Fitness Score')
 
-    axs[1].bar(diversity_of_solutions.keys(), [v['diversity_of_solutions'] for v in diversity_of_solutions.values()])
-    axs[1].set_title('Diversity of Solutions')
-    axs[1].set_ylabel('Diversity')
+    # axs[1].bar(diversity_of_solutions.keys(), [v['diversity_of_solutions'] for v in diversity_of_solutions.values()])
+    # axs[1].set_title('Diversity of Solutions')
+    # axs[1].set_ylabel('Diversity')
 
-    axs[2].bar(computational_efficiency.keys(), [v['computational_efficiency'] for v in computational_efficiency.values()])
-    axs[2].set_title('Computational Efficiency')
-    axs[2].set_ylabel('Time (seconds)')
+    # axs[2].bar(computational_efficiency.keys(), [v['computational_efficiency'] for v in computational_efficiency.values()])
+    # axs[2].set_title('Computational Efficiency')
+    # axs[2].set_ylabel('Time (seconds)')
 
-    plt.tight_layout()
-    plt.show()
+    # plt.tight_layout()
+    # plt.show()
