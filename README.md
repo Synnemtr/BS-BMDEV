@@ -4,9 +4,9 @@
 
 Open Docker Desktop on your computer. In the Dockerfile in this directory, put the name of the file that should be run when using the `./run.sh` command.
 
-Make `run.sh` executable: `chmod +x run.sh`
+Make `run.sh` executable: `chmod +x run.sh` (on macOS)
 
-Run `./run.sh`
+Run `./run.sh` (`bash run.sh` on Linux)
 ## Identification software
 identify_attacker.py is a program that uses a combination of an autoencoder and a genetic algorithm to identify an "attacker" image from a set of images.
 

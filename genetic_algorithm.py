@@ -3,14 +3,6 @@ import matplotlib.pyplot as plt
 import random
 from skimage.metrics import structural_similarity as ssim
 
-# Plot the fitness scores over generations
-def plot_fitness_scores(fitness_scores):
-    generations = range(len(fitness_scores))
-    plt.plot(generations, fitness_scores)
-    plt.xlabel('Generation')
-    plt.ylabel('Average Fitness Score')
-    plt.title('Fitness Scores Over Generations')
-    plt.show()
 
 # Select the best genomes based on the lowest fitness score fitness score
 def select_parents_low(population, fitness_scores):
@@ -171,8 +163,7 @@ def genetic_algorithm_with_mse(population, victim_choice, population_size, mutat
     # decoded_image = decode_genome(autoencoder, lowest_fitness_score_genome)
     # print(f"Iteration {i + 1}, Best image: {decoded_image} \n")
 
-    average_fitness_score = np.mean(fitness_scores)
-    return new_population, average_fitness_score
+    return new_population, fitness_scores
 
 
 # Evaluate the fitness of the images with Peak Signal-to-Noise Ratio (PSNR)
@@ -210,9 +201,7 @@ def genetic_algorithm_with_psnr(population, victim_choice, population_size, muta
     parents = select_parents_high(population, fitness_scores)
     new_population = generate_new_population_psnr(parents, population_size, mutation_rate)
 
-    average_fitness_score = np.mean(fitness_scores)
-
-    return new_population, average_fitness_score
+    return new_population, fitness_scores
 
 
 # Evaluate the fitness of the images with Structural Similarity Index (SSIM)
@@ -248,6 +237,4 @@ def genetic_algorithm_with_ssim(population, victim_choice, population_size, muta
     parents = roulette_wheel_selection(population, fitness_scores)
     new_population = generate_new_population_ssim(parents, population_size, mutation_rate)
 
-    average_fitness_score = np.mean(fitness_scores)
-
-    return new_population, average_fitness_score
+    return new_population, fitness_scores

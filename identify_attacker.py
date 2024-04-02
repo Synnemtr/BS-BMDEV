@@ -1,43 +1,24 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import random
-from autoencoder import create_autoencoder, load_autoencoder_model, split_data, display_data_set, visualize_prediction, test_encoder_decoder, train_model
-from genetic_algorithm import genetic_algorithm_with_mse, genetic_algorithm_with_psnr, genetic_algorithm_with_ssim, plot_fitness_scores
+from autoencoder import create_autoencoder, load_autoencoder_model, split_data, visualize_prediction, train_model
+from genetic_algorithm import genetic_algorithm_with_mse, genetic_algorithm_with_psnr, genetic_algorithm_with_ssim
 
 chosen_images_history = [] # List to store the images chosen by the user
 
 # Function to train the autoencoder
-# def population_initiation(image_folder, population_size):
-    # folder = image_folder + "/small_set"
-    # all_files = [f for f in os.listdir(folder) if f.endswith('.jpg')]
-    # population_files = random.sample(all_files, population_size)
-
-    # population_images = []
-    # plt.figure(figsize=(10, 10))
-    # for i, image_file in enumerate(population_files):
-    #     img = Image.open(os.path.join(folder, image_file))
-    #     population_images.append(np.array(img))
-    #     plt.subplot(2, 2, i + 1)
-    #     img = np.squeeze(img)
-    #     plt.imshow(img)
-    #     plt.axis("off")
-    #     plt.title(f"Image {i + 1}")
-
-    # plt.show()
-
-    # return population_images
 def train_autoencoder(train_data, val_data):
     train_new =input("Do you want to train a new model [y/n] : ")
     if train_new=="y":
         saving_name=input("Choose a name for the model : ")
         print("Creation of the model and print the summary : ")
-        autoencoder=create_autoencoder((160,144,3), latent_dim=252)
-        train_model(train_data, val_data, autoencoder, 10, 500, saving_name)
+        autoencoder=create_autoencoder((128,128,3), latent_dim=256)
+        train_model(train_data, val_data, autoencoder, 15, 300, saving_name)
         visualize_prediction(val_data[0][0], autoencoder, train=False, nbr_images_displayed=8)
     else :
         file_name = input("Enter the model file name : ")
         autoencoder_loaded, encoder, decoder=load_autoencoder_model('model/' + file_name + '.keras')
-        train_model(train_data, val_data, autoencoder_loaded, 3, 1000, saving_name=file_name)
+        train_model(train_data, val_data, autoencoder_loaded, 10, 500 , saving_name=file_name)
         visualize_prediction(val_data[0][0], autoencoder_loaded, train=False, nbr_images_displayed=8)
 
 # Initialize population with random genomes
@@ -92,7 +73,6 @@ def display_image_vectors(images):
 # Identify the attacker using genetic algorithm and the autoencoder's encoder and decoder layer's
 def idenfity_attacker(autoencoder, encoder, decoder, image_width, image_height, image_channels, batch, init_size, population_size, extra_generating, max_iterations, mutation_rate):
     population = population_initiation(batch, init_size)  # init random population
-    average_fitness_scores_over_generations = []
 
     # User's choice of genetic algorithm
     print("Choose a genetic algorithm:")
@@ -110,17 +90,16 @@ def idenfity_attacker(autoencoder, encoder, decoder, image_width, image_height, 
         
         # Use chosen genetic algorithm
         if choice == 1:
-            new_population, average_fitness_score = genetic_algorithm_with_mse(encode_population, encode_victim_choice, population_size, mutation_rate)
+            new_population = genetic_algorithm_with_mse(encode_population, encode_victim_choice, population_size, mutation_rate)
         elif choice == 2:
-            new_population, average_fitness_score = genetic_algorithm_with_psnr(encode_population, encode_victim_choice, population_size, mutation_rate)
+            new_population = genetic_algorithm_with_psnr(encode_population, encode_victim_choice, population_size, mutation_rate)
         elif choice == 3:
-            new_population, average_fitness_score = genetic_algorithm_with_ssim(encode_population, encode_victim_choice, population_size, mutation_rate)
+            new_population = genetic_algorithm_with_ssim(encode_population, encode_victim_choice, population_size, mutation_rate)
         else:
             print("Invalid choice. Defaulting to MSE.")
-            new_population, average_fitness_score = genetic_algorithm_with_mse(encode_population, encode_victim_choice, population_size, mutation_rate)
+            new_population = genetic_algorithm_with_mse(encode_population, encode_victim_choice, population_size, mutation_rate)
         
         decoded_new_population = [decoder.predict(image[-1]) for image in new_population]
-        average_fitness_scores_over_generations.append(average_fitness_score)
 
         # display_image_vectors(decoded_new_population)
         reshaped_population = [np.reshape(img, (image_width, image_height, image_channels)) for img in decoded_new_population]
@@ -132,9 +111,6 @@ def idenfity_attacker(autoencoder, encoder, decoder, image_width, image_height, 
         plt.show()
 
         population = decoded_new_population
-    
-    # Plot the fitness scores over the generations
-    plot_fitness_scores(average_fitness_scores_over_generations)
             
 
 # Main function to run the program
@@ -153,12 +129,11 @@ if __name__ == "__main__":
 
     print("Proceed to split data :")
     folder="./data/img_align_celeba"
-    train_data, val_data=split_data(folder, seed_nb=40, image_size=(image_width,image_height))
-
+    train_data, val_data=split_data(folder, seed_nb=40, image_size=(128,128), batch_size=128)
     # print("Test images loaded in train data : ")
-    # display_data_set(train_data, population_size)
+    # display_data_set(train_data)
     # print("Test images loaded in val data : ")
-    # display_data_set(val_data, population_size)
+    # display_data_set(val_data)
     train_or_not=input("Do you want to train a model [y/n] : ")
 
     if train_or_not=="y":
