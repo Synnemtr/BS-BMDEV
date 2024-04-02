@@ -25,8 +25,9 @@ def compare_average_fitness_scores(algorithms, encoder, decoder, image_width, im
     for algorithm in algorithms:
         fitness_scores = []
         for i in range(max_iterations):
+            encoded_victim_choice = [encoder.predict(image.reshape(1, image_width, image_height, image_channels)) for image in population[:2]]
             encode_population = [encoder.predict(image.reshape(1, image_width, image_height, image_channels)) for image in population]
-            new_population, fitness_score = algorithm(encode_population, population_size, mutation_rate)
+            new_population, fitness_score = algorithm(encode_population, encoded_victim_choice, population_size, mutation_rate)
             decoded_new_population = [decoder.predict(image[-1]) for image in new_population]
             population = decoded_new_population
             fitness_scores.append(fitness_score)
@@ -48,8 +49,9 @@ def compare_diversity_of_solutions(algorithms, encoder, decoder, image_width, im
 
     for algorithm in algorithms:
         for i in range(max_iterations):
+            encoded_victim_choice = [encoder.predict(image.reshape(1, image_width, image_height, image_channels)) for image in population[:2]]
             encode_population = [encoder.predict(image.reshape(1, image_width, image_height, image_channels)) for image in population]
-            new_population, fitness_score = algorithm(encode_population, population_size, mutation_rate)
+            new_population, fitness_score = algorithm(encode_population, encoded_victim_choice, population_size, mutation_rate)
             decoded_new_population = [decoder.predict(image[-1]) for image in new_population]
             population = decoded_new_population
 
@@ -71,8 +73,9 @@ def compare_computational_efficiency(algorithms, encoder, decoder, image_width, 
     for algorithm in algorithms:
         start_time = time.time()
         for i in range(max_iterations):
+            encoded_victim_choice = [encoder.predict(image.reshape(1, image_width, image_height, image_channels)) for image in population[:2]]
             encode_population = [encoder.predict(image.reshape(1, image_width, image_height, image_channels)) for image in population]
-            new_population, fitness_score = algorithm(encode_population, population_size, mutation_rate)
+            new_population, fitness_score = algorithm(encode_population, encoded_victim_choice, population_size, mutation_rate)
             decoded_new_population = [decoder.predict(image[-1]) for image in new_population]
             population = decoded_new_population
         end_time = time.time()
@@ -95,8 +98,9 @@ def compare_convergence_speed(algorithms, encoder, decoder, image_width, image_h
     for algorithm in algorithms:
         fitness_scores = []
         for i in range(max_iterations):
+            encoded_victim_choice = [encoder.predict(image.reshape(1, image_width, image_height, image_channels)) for image in population[:2]]
             encode_population = [encoder.predict(image.reshape(1, image_width, image_height, image_channels)) for image in population]
-            new_population, fitness_score = algorithm(encode_population, population_size, mutation_rate)
+            new_population, fitness_score = algorithm(encode_population, encoded_victim_choice, population_size, mutation_rate)
             decoded_new_population = [decoder.predict(image[-1]) for image in new_population]
             population = decoded_new_population
             fitness_scores.append(fitness_score)
