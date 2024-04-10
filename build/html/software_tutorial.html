@@ -47,7 +47,14 @@
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="tutorial.html">Installation tutorial</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Getting started with our Software</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Getting started with our Software</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#using-docker">Using Docker</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#on-macos">On MacOS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#on-windows">On Windows</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="autoencoder.html">Autoencoder</a></li>
 <li class="toctree-l1"><a class="reference internal" href="genetic_algo.html">Genetic algorithm</a></li>
 <li class="toctree-l1"><a class="reference internal" href="identify_attacker.html">Identify attacker</a></li>
@@ -80,7 +87,19 @@
              
   <section id="getting-started-with-our-software">
 <h1>Getting started with our Software<a class="headerlink" href="#getting-started-with-our-software" title="Link to this heading"></a></h1>
-<p>How to use our Software ?</p>
+<section id="using-docker">
+<h2>Using Docker<a class="headerlink" href="#using-docker" title="Link to this heading"></a></h2>
+<section id="on-macos">
+<h3>On MacOS<a class="headerlink" href="#on-macos" title="Link to this heading"></a></h3>
+<p>Open Docker Desktop on your computer. In the Dockerfile in this directory, put the name of the file that should be run when using the <code class="docutils literal notranslate"><span class="pre">./run.sh</span></code> command.</p>
+<p>Make <code class="docutils literal notranslate"><span class="pre">run.sh</span></code> executable: <code class="docutils literal notranslate"><span class="pre">chmod</span> <span class="pre">+x</span> <span class="pre">run.sh</span></code></p>
+<p>Run <code class="docutils literal notranslate"><span class="pre">./run.sh</span></code></p>
+</section>
+<section id="on-windows">
+<h3>On Windows<a class="headerlink" href="#on-windows" title="Link to this heading"></a></h3>
+<p>Run <code class="docutils literal notranslate"><span class="pre">bash</span> <span class="pre">run.sh</span></code></p>
+</section>
+</section>
 </section>
 
 

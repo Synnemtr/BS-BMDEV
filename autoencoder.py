@@ -1,4 +1,5 @@
-"""Module to train and load autoencoder"""
+"""A module allowing to train a new model or saved one and to load an autoencoder to visualize prediction"""
+
 
 """"======Modules======="""
 import matplotlib.pyplot as plt
