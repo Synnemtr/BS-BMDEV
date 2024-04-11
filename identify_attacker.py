@@ -123,13 +123,13 @@ if __name__ == "__main__":
     max_iterations = 3 # number of iterations to run the genetic algorithm
 
     mutation_rate = 0.01
-    image_width = 160
-    image_height = 144
+    image_width = 128
+    image_height = 128
     image_channels = 3
 
     print("Proceed to split data :")
     folder="./data/img_align_celeba"
-    train_data, val_data=split_data(folder, seed_nb=40, image_size=(128,128), batch_size=128)
+    train_data, val_data=split_data(folder, seed_nb=40, image_size=(image_width,image_height), batch_size=128)
     # print("Test images loaded in train data : ")
     # display_data_set(train_data)
     # print("Test images loaded in val data : ")
