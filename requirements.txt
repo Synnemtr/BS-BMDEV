@@ -1,6 +1,7 @@
-numpy==1.26.0
-matplotlib==3.8.2
+numpy==1.24.0
+matplotlib==3.7.5
 pandas==1.4.4
-scipy==1.12.0
-tensorflow==2.15.0
-keras==2.15.0
+scipy==1.10.0
+scikit-image==0.21.0
+keras==2.13.1
+tensorflow==2.13.1
