@@ -7,6 +7,7 @@ Open Docker Desktop on your computer. In the Dockerfile in this directory, put t
 Make `run.sh` executable: `chmod +x run.sh`
 
 Run `./run.sh`
+
 ## Identification software
 identify_attacker.py is a program that uses a combination of an autoencoder and a genetic algorithm to identify an "attacker" image from a set of images.
 
@@ -51,3 +52,5 @@ This algorithm uses the Structural Similarity Index (SSIM) as the fitness functi
 For parent selection, this algorithm uses roulette wheel selection, where the probability of an individual being selected is proportional to its fitness score. It uses uniform crossover for mating and bit flip mutation for mutation. The new population is generated without elitism.
 
 Each of these algorithms can be used depending on the specific requirements of your image processing task.
+
+## UI

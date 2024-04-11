@@ -65,7 +65,7 @@ Decoder :
 Only the beta parameter is varying between the model, from 1 to 5 (best results). Here some examples of some predictions made with the different 
 model using random points in the latent space or from the dataset :
 
-vae_model_NN3
+vae_model_NN3_w1
 """"""""""""""
 beta = 1
 

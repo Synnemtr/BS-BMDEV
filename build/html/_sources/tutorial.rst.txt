@@ -13,3 +13,9 @@ To be sure to have the appropriate version of modules, in the project folder, ru
 Download from Github
 --------------------
 
+In the terminal : ``git clone https://github.com/Synnemtr/BS-BMDEV.git``
+
+Or you can go to this `link`_ and clone the directory from the GitHub website :
+
+.. _link: https://github.com/Synnemtr/BS-BMDEV
+

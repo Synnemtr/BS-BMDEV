@@ -51,8 +51,9 @@
 <li class="toctree-l1"><a class="reference internal" href="autoencoder.html">Autoencoder</a></li>
 <li class="toctree-l1"><a class="reference internal" href="genetic_algo.html">Genetic algorithm</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Identify attacker</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#identify_attacker.display_image_vectors"><code class="docutils literal notranslate"><span class="pre">display_image_vectors()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#identify_attacker.get_victim_choice"><code class="docutils literal notranslate"><span class="pre">get_victim_choice()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#identify_attacker.idenfity_attacker"><code class="docutils literal notranslate"><span class="pre">idenfity_attacker()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#identify_attacker.identifying_loop"><code class="docutils literal notranslate"><span class="pre">identifying_loop()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#identify_attacker.population_initiation"><code class="docutils literal notranslate"><span class="pre">population_initiation()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#identify_attacker.train_autoencoder"><code class="docutils literal notranslate"><span class="pre">train_autoencoder()</span></code></a></li>
 </ul>
@@ -90,40 +91,62 @@
 <p>This module provides functions to train an autoencoder, load trained models, split data,
 display datasets, visualize predictions, and perform a genetic attack to identify attackers.</p>
 <dl class="py function">
-<dt class="sig sig-object py" id="identify_attacker.idenfity_attacker">
-<span class="sig-prename descclassname"><span class="pre">identify_attacker.</span></span><span class="sig-name descname"><span class="pre">idenfity_attacker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">autoencoder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">decoder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">population_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_iterations</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mutation_rate</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#identify_attacker.idenfity_attacker" title="Link to this definition"></a></dt>
-<dd><p>Identify attacker using genetic algorithm.</p>
+<dt class="sig sig-object py" id="identify_attacker.display_image_vectors">
+<span class="sig-prename descclassname"><span class="pre">identify_attacker.</span></span><span class="sig-name descname"><span class="pre">display_image_vectors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">images</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#identify_attacker.display_image_vectors" title="Link to this definition"></a></dt>
+<dd><p>This function displays the vectors of the given images.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>autoencoder</strong> – Autoencoder model.</p></li>
-<li><p><strong>encoder</strong> – Encoder model.</p></li>
-<li><p><strong>decoder</strong> – Decoder model.</p></li>
-<li><p><strong>batch</strong> – Data batch.</p></li>
-<li><p><strong>population_size</strong> – Size of the population.</p></li>
-<li><p><strong>max_iterations</strong> – Maximum number of iterations.</p></li>
-<li><p><strong>mutation_rate</strong> – Rate of mutation.</p></li>
-</ul>
+<dd class="field-odd"><p><strong>images</strong> (<em>list</em>) – The list of images.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="identify_attacker.identifying_loop">
-<span class="sig-prename descclassname"><span class="pre">identify_attacker.</span></span><span class="sig-name descname"><span class="pre">identifying_loop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ui</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">decoder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">population</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">population_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_iterations</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mutation_rate</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#identify_attacker.identifying_loop" title="Link to this definition"></a></dt>
-<dd><p>Loop to identify attackers using genetic algorithm.</p>
+<dt class="sig sig-object py" id="identify_attacker.get_victim_choice">
+<span class="sig-prename descclassname"><span class="pre">identify_attacker.</span></span><span class="sig-name descname"><span class="pre">get_victim_choice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mutated_images</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extra_images</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#identify_attacker.get_victim_choice" title="Link to this definition"></a></dt>
+<dd><p>This function asks the user to choose the image(s) that most resemble the attacker. The user’s choices are returned.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>root</strong> – Tkinter root window.</p></li>
-<li><p><strong>ui</strong> – User interface object.</p></li>
-<li><p><strong>encoder</strong> – Encoder model.</p></li>
-<li><p><strong>decoder</strong> – Decoder model.</p></li>
-<li><p><strong>population</strong> – Current population.</p></li>
-<li><p><strong>population_size</strong> – Size of the population.</p></li>
-<li><p><strong>max_iterations</strong> – Maximum number of iterations.</p></li>
-<li><p><strong>mutation_rate</strong> – Rate of mutation.</p></li>
+<li><p><strong>mutated_images</strong> (<em>list</em>) – The list of mutated images.</p></li>
+<li><p><strong>extra_images</strong> (<em>list</em>) – The list of extra images.</p></li>
 </ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The user’s choices of images.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="identify_attacker.idenfity_attacker">
+<span class="sig-prename descclassname"><span class="pre">identify_attacker.</span></span><span class="sig-name descname"><span class="pre">idenfity_attacker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">autoencoder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">decoder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_width</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_height</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">population_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extra_generating</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_iterations</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mutation_rate</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#identify_attacker.idenfity_attacker" title="Link to this definition"></a></dt>
+<dd><p>This function identifies the attacker using a genetic algorithm and the autoencoder’s encoder and decoder layers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>autoencoder</strong> (<em>model</em>) – The autoencoder model.</p></li>
+<li><p><strong>encoder</strong> (<em>model</em>) – The encoder part of the autoencoder.</p></li>
+<li><p><strong>decoder</strong> (<em>model</em>) – The decoder part of the autoencoder.</p></li>
+<li><p><strong>image_width</strong> (<em>int</em>) – The width of the images.</p></li>
+<li><p><strong>image_height</strong> (<em>int</em>) – The height of the images.</p></li>
+<li><p><strong>image_channels</strong> (<em>int</em>) – The number of channels in the images.</p></li>
+<li><p><strong>batch</strong> (<em>generator</em>) – A batch of images.</p></li>
+<li><p><strong>init_size</strong> (<em>int</em>) – The size of the initial population.</p></li>
+<li><p><strong>population_size</strong> (<em>int</em>) – The size of the population.</p></li>
+<li><p><strong>extra_generating</strong> (<em>int</em>) – The number of extra images to generate.</p></li>
+<li><p><strong>max_iterations</strong> (<em>int</em>) – The maximum number of iterations to run the genetic algorithm.</p></li>
+<li><p><strong>mutation_rate</strong> (<em>float</em>) – The rate at which the genomes should be mutated.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
 </dd>
 </dl>
 </dd></dl>
@@ -131,33 +154,41 @@ display datasets, visualize predictions, and perform a genetic attack to identif
 <dl class="py function">
 <dt class="sig sig-object py" id="identify_attacker.population_initiation">
 <span class="sig-prename descclassname"><span class="pre">identify_attacker.</span></span><span class="sig-name descname"><span class="pre">population_initiation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">population_size</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#identify_attacker.population_initiation" title="Link to this definition"></a></dt>
-<dd><p>Initialize the population with random genomes.</p>
+<dd><p>This function initializes a population of images randomly selected from a batch. The population size cannot exceed the number of images in the batch.
+The selected images are displayed and returned.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>batch</strong> – Data batch.</p></li>
-<li><p><strong>population_size</strong> – Size of the population.</p></li>
+<li><p><strong>batch</strong> (<em>generator</em>) – A batch of images.</p></li>
+<li><p><strong>population_size</strong> (<em>int</em>) – The size of the population.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Initial population.</p>
+<dd class="field-even"><p>The initial population of images.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>List</p>
+<dd class="field-odd"><p>list</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="identify_attacker.train_autoencoder">
-<span class="sig-prename descclassname"><span class="pre">identify_attacker.</span></span><span class="sig-name descname"><span class="pre">train_autoencoder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">train_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val_data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#identify_attacker.train_autoencoder" title="Link to this definition"></a></dt>
-<dd><p>Train the autoencoder model.</p>
+<span class="sig-prename descclassname"><span class="pre">identify_attacker.</span></span><span class="sig-name descname"><span class="pre">train_autoencoder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">train_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_width</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_height</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#identify_attacker.train_autoencoder" title="Link to this definition"></a></dt>
+<dd><p>This function trains an autoencoder model. It asks the user whether they want to train a new model or use an existing one.
+If the user chooses to train a new model, they are asked to provide a name for the model. The model is then created, trained, and its predictions are visualized.
+If the user chooses to use an existing model, they are asked to provide the model file name. The model is then loaded, trained, and its predictions are visualized.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>train_data</strong> – Training data.</p></li>
-<li><p><strong>val_data</strong> – Validation data.</p></li>
+<li><p><strong>train_data</strong> (<em>array</em>) – The training data.</p></li>
+<li><p><strong>val_data</strong> (<em>array</em>) – The validation data.</p></li>
+<li><p><strong>image_width</strong> (<em>int</em>) – The width of the images.</p></li>
+<li><p><strong>image_height</strong> (<em>int</em>) – The height of the images.</p></li>
 </ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
 </dd>
 </dl>
 </dd></dl>
