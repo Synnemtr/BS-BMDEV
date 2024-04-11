@@ -1,0 +1,11 @@
+Metadata-Version: 2.1
+Name: software-development-project-team1
+Version: 0.1.0
+Summary: Software to help victims portray a culprit using an autoencoder model trained on the CelebA dataset and a genetic algorithm
+Author: Laetitia Guérout, Théo Berthet, Lucas Bodelle & Synne Trettenes
+Author-email: laetitia.guerout@insa-lyon.fr, theo.berthet@insa-lyon.fr, lucas.bodelle@insa-lyon.fr, synne-moe.trettenes@insa-lyon.fr
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.6
+License-File: LICENSE

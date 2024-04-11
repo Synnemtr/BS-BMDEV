@@ -311,7 +311,7 @@ if __name__ == "__main__":
             saving_name=input("Choose a name for the model : ")
             print("Creation of the model and print the summary : ")
             autoencoder=create_autoencoder((128,128,3), latent_dim=256, beta=1)
-            train_model(train_data, val_data, autoencoder, 60, 500, saving_name)
+            train_model(train_data, val_data, autoencoder, 80, 500, saving_name)
             visualize_prediction(val_data[0][0], autoencoder, train=False, nbr_images_displayed=8)
         else :
            file_name = input("Enter the model file name : ")

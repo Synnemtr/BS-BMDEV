@@ -1,0 +1,7 @@
+LICENSE
+README.md
+setup.py
+software_development_project_team1.egg-info/PKG-INFO
+software_development_project_team1.egg-info/SOURCES.txt
+software_development_project_team1.egg-info/dependency_links.txt
+software_development_project_team1.egg-info/top_level.txt

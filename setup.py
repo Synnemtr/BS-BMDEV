@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 setup(
-name='Software development project',
+name='software_development_project_team1',
 version='0.1.0',
 author='Laetitia Guérout, Théo Berthet, Lucas Bodelle & Synne Trettenes',
 author_email='laetitia.guerout@insa-lyon.fr, theo.berthet@insa-lyon.fr, lucas.bodelle@insa-lyon.fr, synne-moe.trettenes@insa-lyon.fr',
