@@ -1,27 +1,12 @@
 Installation tutorial
 =====================
 
-
-Download from PyPI
-------------------
-
-In the terminal : ``pip install software-development-project-team1``
-
-To be sure to have the appropriate version of modules, in the project folder, run in the terminal: 
-``pip install -r requirements.txt``
-
-You can now use the Python module and the software in the terminal using : 
-``python3``
-``import software-development-project-team1``
-``software-development-project-team1.identify_attacker``
-
-
 Download from Github
 --------------------
 
 In the terminal : ``git clone https://github.com/Synnemtr/BS-BMDEV.git``
 
-Or you can go to this `link`_ and clone the directory from the GitHub website :
+Or you can go to this `link`_ and clone the directory from the GitHub website.
 
 .. _link: https://github.com/Synnemtr/BS-BMDEV
 
@@ -45,4 +30,25 @@ On Windows
 Open Docker Desktop on your computer.
 
 Run ``bash run.sh``
+
+Launch the software from the directory
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Make sure to have the correct versions of the modules by running in the software folder in the terminal : ``pip install -r requirements.txt``
+
+Still in the software folder, you can then launch the software by running :
+``python3 identify_attacker.py``
+
+
+
+Download from PyPI
+------------------
+
+The PyPI module is not working yet due to issues related to the weights of the project.
+
+In the terminal : ``pip install software_development_project_team1`` or to install it in a specific directory ``pip install software_development_project_team1``
+
+You can now use the Python module and the software in the terminal using : 
+``python3 software-development-project-team1.identify_attacker``
+
 

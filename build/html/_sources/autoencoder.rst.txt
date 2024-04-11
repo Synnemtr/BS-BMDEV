@@ -66,7 +66,7 @@ Only the beta parameter is varying between the model, from 1 to 5 (best results)
 model using random points in the latent space or from the dataset :
 
 vae_model_NN3_w1
-""""""""""""""
+""""""""""""""""
 beta = 1
 
 Prediction from dataset :
