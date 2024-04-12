@@ -103,10 +103,11 @@ class Logicielprincipal(tk.Frame) :
             self.master = master
             self.pack()
             self.create_widgets()
-            self.tutoriel_frame_liste = ["template_doc/giphy_1.gif" , 
-                                         "template_doc/giphy_1.gif",
-                                         "template_doc/giphy_1.gif",
-                                         "template_doc/giphy_1.gif",]
+            self.tutoriel_frame_liste = ["template_doc/photo_tuto_1.png" , 
+                                         "template_doc/photo_tuto_2.png",
+                                         "template_doc/photo_tuto_3.png",
+                                         "template_doc/photo_tuto_4.png",
+                                        "template_doc/photo_tuto_5.png"]
             self.index_tutoriel = 0
             
         def create_widgets(self) : 
@@ -211,7 +212,7 @@ class Logicielprincipal(tk.Frame) :
                 self.Button_suivant.config(bg = "pink")
             self.number_label_index.config(text=f"{self.index_tutoriel}")
         def open_website_tutoriel(self) : 
-            webbrowser.open("https://www.youtube.com/")
+            webbrowser.open("https://bs-bmdev-team1.readthedocs.io/en/latest/")
           
             
     #code qui s'occupe de la case pour le choix de l'algo 
