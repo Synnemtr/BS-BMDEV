@@ -1,5 +1,9 @@
 # BS-BMDEV
 
+## Website 
+
+https://bs-bmdev-team1.readthedocs.io/en/latest/
+
 ## How to run the project
 
 ### Download from Github
