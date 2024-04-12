@@ -7,9 +7,7 @@ import time
 from tkinter import ttk
 import tkinter as tk
 import os
-import autoencoder_final
-import genetic_algorithm_final
-import identify_attacker_final
+import webbrowser
 
 
 #from autoencoder_final import load_autoencoder_model
@@ -86,27 +84,34 @@ class Logicielprincipal(tk.Frame) :
             self.master = master
             self.pack()
             self.create_widgets()
+            self.tutoriel_frame_liste = ["C:/Users/lukyl/OneDrive/Images/giphy.gif" , 
+                                         "C:/Users/lukyl/OneDrive/Images/giphy_1.gif",
+                                         "C:/Users/lukyl/OneDrive/Images/giphy.gif",
+                                         "C:/Users/lukyl/OneDrive/Images/giphy_1.gif",]
+            self.index_tutoriel = 0
             
         def create_widgets(self) : 
 
             #création de la zone de contenu caché 
-            self.menu_contenu = Frame(self.master,bg = "lightgrey" , width = 200)
+            self.menu_contenu = Frame(self.master,bg = "white" , width = 200)
             self.menu_contenu.pack_propagate(False)
-            self.menu_contenu.place(x=-150,y=0,relheight=1,relwidth=0.2)
+            self.menu_contenu.place(x=-200,y=0,relheight=1,relwidth=0.2)
 
             #création de la zone bouton pour affciher le menu 
 
-            self.bouton_menu = Button(self.master,text="Menu",command=self.toggle_menu)
+            self.bouton_menu = Button(self.master,text="Help",command=self.toggle_menu)
             self.bouton_menu.place(x=10,y=10)
 
-            self.label_menu = Label(self.menu_contenu,text="Menu items" , bg= "lightgrey") 
+            self.label_menu = Label(self.menu_contenu,text="Liste help" , bg= "lightgrey") 
             self.label_menu.pack(pady=10)
             
-            self.items1 = Button(self.menu_contenu,text= "Option 1")
+            self.items1 = Button(self.menu_contenu,text= "tutoriel" , command = self.init_tutoriel)
             self.items1.pack(pady=5)
 
-            self.items2 = Button(self.menu_contenu,text = "Option 2")
+            self.items2 = Button(self.menu_contenu,text = "lien web" , command = self.open_website_tutoriel)
             self.items2.pack(pady = 5)
+
+            
 
         def move_contenu(self) :
                     step = 1
@@ -119,12 +124,77 @@ class Logicielprincipal(tk.Frame) :
                         self.master.after(2,self.toggle_menu)      
 
         def toggle_menu(self) : 
-            print("test")
+           
             if self.menu_contenu.winfo_x() < 0 : 
                 self.move_contenu()    
             else : 
-                self.menu_contenu.place(x=-150)
+                self.menu_contenu.place(x=-200)
 
+        
+        def init_tutoriel(self) : 
+
+            tutoriel_fenetre = Toplevel(self.master)
+            tutoriel_fenetre.title("tutoriel")
+            tutoriel_fenetre.geometry("600x600")
+            tutoriel_fenetre.configure(bg="light blue")
+
+            nouvelle_image = Image.open(self.tutoriel_frame_liste[0])
+            nouvelle_image  = ImageTk.PhotoImage(nouvelle_image)
+
+            self.Frame_tutoriel = Frame(tutoriel_fenetre,width=500 , height = 500)
+            self.Frame_tutoriel.place(x=50,y=50)
+            self.label_tutoriel = Label(self.Frame_tutoriel , image = nouvelle_image)
+            self.label_tutoriel.image = nouvelle_image
+            self.label_tutoriel.place(x=0,y=0)
+         
+
+            self.Button_suivant = Button(tutoriel_fenetre,text = "suivant" , bg = "pink" , width = 15 , command = lambda  : self.change_frame("suivant"))
+            self.Button_suivant.place(x = 400 , y = 575)
+
+            self.Button_retour = Button(tutoriel_fenetre , text =  "retour" , bg = "lightgrey" , width = 15 , command = lambda : self.change_frame("retour"))
+            self.Button_retour.place(x = 100 , y = 575)
+
+            self.number_label_index = Label(tutoriel_fenetre , text = "0" , width = 10 , bg = "white")
+            self.number_label_index.place(x = 275 , y = 575)
+
+        def change_frame(self,method) :
+            if method == "retour" : 
+                print("test2")
+                if self.index_tutoriel >= 1 : 
+                    self.index_tutoriel-= 1
+                    nouvelle_image = Image.open(self.tutoriel_frame_liste[self.index_tutoriel])
+                    nouvelle_image  = ImageTk.PhotoImage(nouvelle_image)
+                    self.label_tutoriel.config(image = nouvelle_image)
+                    self.label_tutoriel.image = nouvelle_image
+                    self.label_tutoriel.place(x=0,y=0)
+                    self.check_state()
+            if method == "suivant" : 
+                if self.index_tutoriel < len(self.tutoriel_frame_liste)-1 : 
+                    self.index_tutoriel+= 1
+                    nouvelle_image = Image.open(self.tutoriel_frame_liste[self.index_tutoriel])
+                    nouvelle_image  = ImageTk.PhotoImage(nouvelle_image)
+                    self.label_tutoriel.config(image = nouvelle_image)
+                    self.label_tutoriel.image = nouvelle_image
+                    self.label_tutoriel.place(x=0,y=0)
+                    self.check_state()
+
+        def check_state(self) : 
+          
+            if self.index_tutoriel == 0 : 
+                self.Button_retour.config(bg = "lightgrey")
+            else : 
+                self.Button_retour.config(bg = "pink")
+
+    
+            if self.index_tutoriel == len(self.tutoriel_frame_liste)-1 : 
+                self.Button_suivant.config(bg = "lightgrey")
+            else : 
+                self.Button_suivant.config(bg = "pink")
+            self.number_label_index.config(text=f"{self.index_tutoriel}")
+        def open_website_tutoriel(self) : 
+            webbrowser.open("https://www.youtube.com/")
+          
+            
     #code qui s'occupe de la case pour le choix de l'algo 
     class List_box(tk.Frame) : 
         def __init__(self,master=None) : 
@@ -144,7 +214,7 @@ class Logicielprincipal(tk.Frame) :
             liste_box_A_frame.place(x=200,y=230)
             self.list_box_A.place(x=200,y=235)
             #Le code ici permet de récupérer dans le dossier model , le nom des models
-            path_model = "graphique/model/"
+            path_model = "C:/Users/lukyl/Music/javascript/__pycache__/graphique/model/"
             if os.path.isdir(path_model) : 
                 models = os.listdir(path_model)
                 for i in range(len(models))  : 
@@ -211,76 +281,7 @@ class Logicielprincipal(tk.Frame) :
             button_4.place(x = 400 , y = 470)
             button_8.place(x = 400 , y = 490)
             button_12.place(x = 400 ,  y = 510)
-            
-    class tutoriel(tk.Frame) : 
-        def __init__(self,master=None) : 
-            super().__init__(master)
-            self.master = master
-            self.pack()
-            self.create_widgets()
-        def create_widgets(self) : 
-            help_image = Image.open("C:/Users/lukyl/Music/javascript/__pycache__/graphique/template_doc/bouton_question_blanc.jpg")
-            help_image = help_image.resize((50,50) , Image.LANCZOS)
-            help_image_tk = ImageTk.PhotoImage(help_image)
-
-            bouton_tuto = Button(self.master, image = help_image_tk , bg="light blue" , command = self.init_tutoriel)
-            bouton_tuto.image = help_image_tk
-            bouton_tuto.place(x= 800 , y = 550)
-        
-
-        def init_tutoriel(self) : 
-
-            tutoriel_fenetre = Toplevel(self.master)
-            tutoriel_fenetre.title("tutoriel")
-            tutoriel_fenetre.geometry("600x600")
-            tutoriel_fenetre.configure(bg="light blue")
-            index_tutoriel = 1
-
-            # création de la flèche qui pointe vers la droite 
-            image_tuto_fleche_droite = Image.open("C:/Users/lukyl/Music/javascript/__pycache__/graphique/template_doc/logo_fleche_tuto_gauche.jpg")
-            image_tuto_fleche_droite = image_tuto_fleche_droite.resize((80,80) , Image.LANCZOS)
-            image_tuto_fleche_droite_tk = ImageTk.PhotoImage(image_tuto_fleche_droite)
-
-            tuto_fleche_droite = Button(tutoriel_fenetre,image=image_tuto_fleche_droite_tk , bg = "light blue" , command = self.fonction_fleche_droite )
-            tuto_fleche_droite.image = image_tuto_fleche_droite_tk
-            tuto_fleche_droite.place(x = 300 , y = 300)
-
-            #création de la flèche qui pointe vers la gauche 
-
-            image_tuto_fleche_gauche = Image.open("C:/Users/lukyl/Music/javascript/__pycache__/graphique/template_doc/logo_fleche_tuto_gauche.jpg")
-            image_tuto_fleche_gauche = image_tuto_fleche_gauche.resize((80,80) , Image.LANCZOS)
-            image_tuto_fleche_gauche_tk = ImageTk.PhotoImage(image_tuto_fleche_gauche)
-
-            tuto_fleche_gauche = Button(tutoriel_fenetre , image = image_tuto_fleche_gauche_tk , bg = 'light blue')
-            tuto_fleche_gauche.image = image_tuto_fleche_gauche_tk
-            tuto_fleche_gauche.place(x = 150 , y = 300)
-
-            """
-
-            def pannel_1() : 
-                label_pannel_1 = Label(tutoriel_fenetre,text = "Frame 1" , height = 5 , width = 20)
-                label_pannel_1.place(x = 200 , y = 200 )
-            def pannel_2() : 
-                label_pannel_2 = Label(tutoriel_fenetre,text = "Frame 2" , height = 5 , width = 20)
-                label_pannel_2.place(x = 200 , y = 200 )
-            def pannel_3() : 
-                label_pannel_3 = Label(tutoriel_fenetre,text = "Frame 3" , height = 5 , width = 20)
-                label_pannel_3.place(x = 200 , y = 200 )
-            def pannel_4() : 
-                label_pannel_4 = Label(tutoriel_fenetre,text = "Frame 4" , height = 5 , width = 20)
-                label_pannel_4.place(x = 200 , y = 200 )
-            def pannel_5() : 
-                label_pannel_1 = Label(tutoriel_fenetre,text = "Frame 5" , height = 5 , width = 20)
-                label_pannel_1.place(x = 200 , y = 200 )
-            def fonction_fleche_droite(self) : 
-                if index_tutoriel <= 4 : 
-                    pannel_{index_tutoriel}()
-
-            """
-
-
-    #tutoriel_object = tutoriel(master = nouvelle_fenetre_menu)
-
+   
 
     def interface_object(self) : # Ceci est les composants de notre interface principal
         #préparation de l'image pour le background du logiciel 
@@ -454,11 +455,6 @@ class Logicielprincipal(tk.Frame) :
                 self.load_and_display_image(self.choice_path_image() , item[0] , self.resize , i)
                 i+=1
 
-
-
-
-
-        
         #Bouton correspondant à la fonction Reset
         button_reset = Button(self.master,text= "reset" , command = self.fonction_reset_photo , width=10, height=5)
         button_reset.place(x=500,y=100)
@@ -510,6 +506,20 @@ class Logicielprincipal(tk.Frame) :
 
         bouton_finish = Button(self.master , text = "finish" , width=15 , height = 3 , command = self.finish)
         bouton_finish.place(x=980,y=480)
+
+        #les images complémentaires qu'on a 
+
+        frame_1_complementaire = Frame(self.master , width = 100+HLT , height = 120+HLT)
+        frame_1_complementaire.place( x = 620 , y = 175)
+        
+        frame_2_complementaire = Frame(self.master, width = 100+HLT , height = 120+HLT)
+        frame_2_complementaire.place ( x=620 , y = 40 )
+
+        frame_complementaire_path = "C:/Users/lukyl/Music/javascript/__pycache__/graphique/img_align_celeba/000001.jpg"
+        frame_complementaire_size = [100,120]
+
+        self.load_image_from_autoencoder(frame_complementaire_path,frame_1_complementaire,frame_complementaire_size)
+        self.load_image_from_autoencoder(frame_complementaire_path,frame_2_complementaire,frame_complementaire_size)
 
 
 
@@ -598,8 +608,38 @@ class Logicielprincipal(tk.Frame) :
         
     def changement_image_genetic_autoencoder(self) :
         print(" ici " , self.model)
+        if len(self.liste_frame[0]) > 1 : 
         
-        identify_attacker_final.init_genetic_algo(self.model)
+            for item in self.liste_frame : 
+                item.pop(1)
+    
+        liste_path_test = []
+        for i in range(16) : 
+            liste_path_test.append(self.choice_path_image())
+        for i in range(self.number_image) : 
+            self.load_image_from_autoencoder(liste_path_test[i],self.liste_frame[i][0],self.resize)
+
+        self.frame_select = []
+        self.frame_confirm = []
+
+
+    def load_image_from_autoencoder(self,image_path,frame,resize) :
+        pil_image = Image.open(image_path) # on charge l'image
+        if len(resize) != 0 : #on check si la liste resize est vite , si non , on resize avec x  et y 
+            pil_image = pil_image.resize((resize[0],resize[1]),Image.LANCZOS)
+
+        tk_image = ImageTk.PhotoImage(pil_image)
+     
+        #on met le label d'une image dans le frame 
+        label = Label(frame,image = tk_image , bd = 0 , highlightcolor= "black" , highlightthickness=4 , highlightbackground="black")
+        label.image = tk_image # il faut conserver l'image pour qu'elle soit afficher 
+        label.place(x=0,y=0)
+        label.bind("<Button-1>",lambda event , f=frame : self.select_frame(f,label)) #lorsqu'on clique sur le frame , on a cette action
+    
+
+
+        
+    
 
 
 
@@ -671,8 +711,6 @@ class Logicielprincipal(tk.Frame) :
         ainsi avec ce numéro de frame , j'arrive à retrouver l'index pour le path du frame correspondant """
 
         print(str(self.frame_confirm[0]))
-
-       
         if len(self.frame_confirm) != 0 : 
             if len(str(self.frame_confirm[0])) == 15 : # on récupérer le nom du frame , dans ce frame on connait son numéro
                 #Les frames dans tkinter sont numérotés selon leurs ordres de créations 
