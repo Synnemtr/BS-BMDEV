@@ -4,33 +4,37 @@
     This module provides functions to train an autoencoder, load trained models, split data,
     display datasets, visualize predictions, and perform a genetic attack to identify attackers.
 """
-
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
 import random
 from autoencoder import create_autoencoder, load_autoencoder_model, split_data, display_data_set, visualize_prediction, test_encoder_decoder, train_model
 from genetic_algorithm import genetic_algorithm_with_mse, genetic_algorithm_with_psnr, genetic_algorithm_with_ssim, plot_fitness_scores
-import tkinter as tk
-from ui import UserInterface
-
-
+from keras.preprocessing.image import ImageDataGenerator 
 chosen_images_history = [] # List to store the images chosen by the user
 
+# def population_initiation(image_folder, population_size):
+    # folder = image_folder + "/small_set"
+    # all_files = [f for f in os.listdir(folder) if f.endswith('.jpg')]
+    # population_files = random.sample(all_files, population_size)
+
+    # population_images = []
+    # plt.figure(figsize=(10, 10))
+    # for i, image_file in enumerate(population_files):
+    #     img = Image.open(os.path.join(folder, image_file))
+    #     population_images.append(np.array(img))
+    #     plt.subplot(2, 2, i + 1)
+    #     img = np.squeeze(img)
+    #     plt.imshow(img)
+    #     plt.axis("off")
+    #     plt.title(f"Image {i + 1}")
+
+    # plt.show()
+
+    # return population_images
+
+# Function to train the autoencoder
 def train_autoencoder(train_data, val_data, image_width, image_height):
-    """
-    This function trains an autoencoder model. It asks the user whether they want to train a new model or use an existing one.
-    If the user chooses to train a new model, they are asked to provide a name for the model. The model is then created, trained, and its predictions are visualized.
-    If the user chooses to use an existing model, they are asked to provide the model file name. The model is then loaded, trained, and its predictions are visualized.
-
-    Parameters:
-        train_data (array): The training data.
-        val_data (array): The validation data.
-        image_width (int): The width of the images.
-        image_height (int): The height of the images.
-
-    Returns:
-        None
-    """
     train_new =input("Do you want to train a new model [y/n] : ")
     if train_new=="y":
         saving_name=input("Choose a name for the model : ")
@@ -44,18 +48,8 @@ def train_autoencoder(train_data, val_data, image_width, image_height):
         train_model(train_data, val_data, autoencoder_loaded, 10, 500 , saving_name=file_name)
         visualize_prediction(val_data[0][0], autoencoder_loaded, train=False, nbr_images_displayed=8)
 
+# Initialize population with random genomes
 def population_initiation(batch, population_size):
-    """
-    This function initializes a population of images randomly selected from a batch. The population size cannot exceed the number of images in the batch.
-    The selected images are displayed and returned.
-
-    Parameters:
-        batch (generator): A batch of images.
-        population_size (int): The size of the population.
-
-    Returns:
-        list: The initial population of images.
-    """
     images, _ = next(batch)
 
     if population_size > len(images):
@@ -72,45 +66,6 @@ def population_initiation(batch, population_size):
 
     return init_population
 
-def identifying_loop(root, ui, encoder, decoder, population, population_size, max_iterations, mutation_rate):
-    for i in range(max_iterations):
-        # Checks the status of the choices_validated variable and if the window is still open
-        while ui.window_exists and not ui.choices_validated:
-            root.update_idletasks()
-            root.update()
-        if not ui.window_exists:
-            break
-        victim_choice = [ui.population[image_number - 1] for image_number in ui.user_choice]
-        encode_victim_choice = [encoder.predict(image.reshape(1, 128, 128, 3)) for image in victim_choice] #(batch size, height, width, channels)
-        encode_population = [np.asarray(encoder.predict(image.reshape(1, 128, 128, 3))) for image in population]
-        if i < max_iterations - 1:
-            new_population = genetic_algorithm(decoder, encode_population, encode_victim_choice, population_size, mutation_rate)
-            decoded_new_population = [decoder.predict(image[-1]) for image in new_population]
-            population = [image.reshape(128, 128, 3) for image in decoded_new_population]
-            ui.display_new_images(population)    
-        else:
-            new_population = genetic_algorithm(decoder, encode_population, encode_victim_choice, 1, mutation_rate)
-            decoded_new_population = [decoder.predict(image[-1]) for image in new_population]
-            population = [image.reshape(128, 128, 3) for image in decoded_new_population]
-            # new_population_if_continue = genetic_algorithm(decoder, encode_population, encode_victim_choice, population_size, mutation_rate)
-            # decoded_new_population_if_continue = [decoder.predict(image[-1]) for image in new_population_if_continue]
-            # population_if_continue = [image.reshape(160, 144, 3) for image in decoded_new_population_if_continue]
-
-        ui.end_screen(population) 
-
-# Identify the attacker using genetic algorithm and the autoencoder's encoder and decoder layer's
-def idenfity_attacker(autoencoder, encoder, decoder, batch, population_size, max_iterations, mutation_rate):
-    decoded_population = [autoencoder.predict(individual.reshape(1, 128, 128, 3)) for individual in population_initiation(batch, population_size)]  # init random population
-    population = [image.reshape(128, 128, 3) for image in decoded_population]
-    root = tk.Tk()
-    ui = UserInterface(root, population)
-    identifying_loop(root, ui, encoder, decoder, population, population_size, max_iterations, mutation_rate)
-    # while ui.window_exists and not ui.more_iterations:
-    #     root.update_idletasks()
-    #     root.update()
-    # if ui.more_iterations:
-    #     identifying_loop(root, ui, encoder, decoder, population, population_size, max_iterations, mutation_rate)
-
 # [temporary] get the user's choice of the image that most resembles the attacker
 def get_victim_choice(mutated_images, extra_images):
     global chosen_images_history
@@ -120,6 +75,9 @@ def get_victim_choice(mutated_images, extra_images):
         if choices.lower() == 'quit':
             print("Exiting...")
             return None
+
+        choices = [int(choice.strip()) - 1 for choice in choices.split(",")]
+
         choice = []
         for index in choices:
             try:
@@ -132,42 +90,15 @@ def get_victim_choice(mutated_images, extra_images):
 
         return choice
 
+# Display image vectors
 def display_image_vectors(images):
-    """
-    This function displays the vectors of the given images.
-
-    Parameters:
-        images (list): The list of images.
-
-    Returns:
-        None
-    """
     for i, img in enumerate(images):
         img = np.squeeze(img)
         print(f"Image {i + 1}: ")
         print(img)
 
-def idenfity_attacker(autoencoder, encoder, decoder, image_width, image_height, image_channels, batch, init_size, population_size, extra_generating, max_iterations, mutation_rate):
-    """
-    This function identifies the attacker using a genetic algorithm and the autoencoder's encoder and decoder layers.
-
-    Parameters:
-        autoencoder (model): The autoencoder model.
-        encoder (model): The encoder part of the autoencoder.
-        decoder (model): The decoder part of the autoencoder.
-        image_width (int): The width of the images.
-        image_height (int): The height of the images.
-        image_channels (int): The number of channels in the images.
-        batch (generator): A batch of images.
-        init_size (int): The size of the initial population.
-        population_size (int): The size of the population.
-        extra_generating (int): The number of extra images to generate.
-        max_iterations (int): The maximum number of iterations to run the genetic algorithm.
-        mutation_rate (float): The rate at which the genomes should be mutated.
-
-    Returns:
-        None
-    """
+# Identify the attacker using genetic algorithm and the autoencoder's encoder and decoder layer's
+def idenfity_attacker(autoencoder, encoder, decoder, image_width, image_height, image_channels, batch, init_size, population_size, extra_generating, max_iterations, mutation_rate,victim_choice):
     population = population_initiation(batch, init_size)  # init random population
     average_fitness_scores_over_generations = []
 
@@ -181,8 +112,10 @@ def idenfity_attacker(autoencoder, encoder, decoder, image_width, image_height, 
     for i in range(max_iterations):
         extra_features = population_initiation(batch, extra_generating)
 
-        victim_choice = get_victim_choice(population, extra_features)
+        #victim_choice = get_victim_choice(population, extra_features)
+
         encode_victim_choice = [encoder.predict(image.reshape(1, image_width, image_height, image_channels)) for image in victim_choice] #(batch size, height, width, channels)
+        
         encode_population = [encoder.predict(image.reshape(1, image_width, image_height, image_channels)) for image in population]
         
         # Use chosen genetic algorithm
@@ -214,7 +147,8 @@ def idenfity_attacker(autoencoder, encoder, decoder, image_width, image_height, 
     plot_fitness_scores(average_fitness_scores_over_generations)
             
 
-"""====Main===="""
+
+# Main function to run the program
 if __name__ == "__main__":
 
     # Static parameters
@@ -227,26 +161,79 @@ if __name__ == "__main__":
     image_width = 128
     image_height = 128
     image_channels = 3
+    print("passe ici")
+
+    
 
     print("Proceed to split data :")
     folder="./data/img_align_celeba"
     train_data, val_data=split_data(folder, seed_nb=40, image_size=(image_width,image_height), batch_size=128)
 
+    print("IIIICCCCCCIIIIIIIIIIII")
+
+    print(type(train_data))
+
     # print("Test images loaded in train data : ")
     # display_data_set(train_data, population_size)
     # print("Test images loaded in val data : ")
     # display_data_set(val_data, population_size)
+
+    """
     train_or_not=input("Do you want to train a model [y/n] : ")
 
     if train_or_not=="y":
         train_autoencoder(train_data, val_data, image_width, image_height)
     else :
-        file_name = input("Enter the model file name : ")
-        autoencoder_loaded, encoder, decoder=load_autoencoder_model('model/' + file_name + '.keras')
-        decoder.summary()
-        autoencoder_loaded.summary()
+    """
+    
+    file_name = "vae_model_NN3_w1"
 
-        idenfity_attacker(autoencoder_loaded, encoder, decoder, train_data, population_size, max_iterations, mutation_rate)
-        idenfity_attacker(autoencoder_loaded, encoder, decoder, image_width, image_height, image_channels, train_data, init_size, population_size, extra_images_generated, max_iterations, mutation_rate)
-        # visualize_prediction(val_data[0][0], autoencoder_loaded, train=False, nbr_images_displayed=8)
-        # test_encoder_decoder(val_data[0][0], encoder, decoder, 8)
+    autoencoder_loaded, encoder, decoder=load_autoencoder_model('model/' + file_name + '.h5')
+    decoder.summary()
+    idenfity_attacker(autoencoder_loaded, encoder, decoder, image_width, image_height, image_channels, train_data, init_size, population_size, extra_images_generated, max_iterations, mutation_rate)
+    # visualize_prediction(val_data[0][0], autoencoder_loaded, train=False, nbr_images_displayed=8)
+    # test_encoder_decoder(val_data[0][0], encoder, decoder, 8)
+
+def init_genetic_algo() : 
+    population_size = 4 # number of images to display
+    init_size = 9 # number of images to display in init population
+    extra_images_generated = 4 # number of extra images to generate
+    max_iterations = 3 # number of iterations to run the genetic algorithm
+
+    mutation_rate = 0.01
+    image_width = 128
+    image_height = 128
+    image_channels = 3
+
+    print("Proceed to split data :")
+    folder="./data/img_align_celeba"
+    train_augment=ImageDataGenerator(
+    rescale=1./255,
+    zoom_range=0.1,
+    shear_range=0.1,
+    validation_split=0,
+    )
+    train_data=train_augment.flow_from_directory(
+    folder,
+    target_size=(image_width,image_height),
+    batch_size=64,
+    subset='training',
+    class_mode='input')
+
+    return train_data
+        
+
+
+# print("Test images loaded in train data : ")
+# display_data_set(train_data, population_size)
+# print("Test images loaded in val data : ")
+# display_data_set(val_data, population_size)
+
+"""
+train_or_not=input("Do you want to train a model [y/n] : ")
+
+if train_or_not=="y":
+    train_autoencoder(train_data, val_data, image_width, image_height)
+else :
+"""
+

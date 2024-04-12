@@ -8,6 +8,10 @@ from tkinter import ttk
 import tkinter as tk
 import os
 import webbrowser
+import identify_attacker
+import autoencoder
+import genetic_algorithm
+import numpy as np
 
 
 #from autoencoder_final import load_autoencoder_model
@@ -30,6 +34,7 @@ class Logicielprincipal(tk.Frame) :
             master (Tk object): The master Tk object.
         """
         super().__init__(master)
+        #self.population = identify_attacker.init_genetic_algo()
         self.master = master
         self.pack()
         self.frame_select = [] # les photos sélectionnées pour l'algo génétique
@@ -57,6 +62,8 @@ class Logicielprincipal(tk.Frame) :
             print("ici : " , self.genetic_value)
             self.nouvelle_fenetre.destroy()
             self.interface_object() # on charge la fenetre principal 
+          
+
             self.master.deiconify()
        
     def menu_entree(self) : #Ceci est les composants de notre Menu
@@ -96,9 +103,9 @@ class Logicielprincipal(tk.Frame) :
             self.master = master
             self.pack()
             self.create_widgets()
-            self.tutoriel_frame_liste = ["template_doc/giphy.gif" , 
+            self.tutoriel_frame_liste = ["template_doc/giphy_1.gif" , 
                                          "template_doc/giphy_1.gif",
-                                         "template_doc/giphy.gif",
+                                         "template_doc/giphy_1.gif",
                                          "template_doc/giphy_1.gif",]
             self.index_tutoriel = 0
             
@@ -368,7 +375,8 @@ class Logicielprincipal(tk.Frame) :
 
             i = 0 
             for item in self.liste_frame :  # on charge les images dans chaque frame
-                 self.load_and_display_image(self.choice_path_image() , item[0] , self.resize , i )
+                 #self.load_and_display_image(self.choice_path_image() , item[0] , self.resize , i )
+                 self.load_and_display_image(i )
                  i+=1
                 
         if self.number_image == 9 : 
@@ -482,7 +490,7 @@ class Logicielprincipal(tk.Frame) :
         #Choix du gif à faire apparaitre dans la barre loading
         gif_path_joke = "template_doc/giphy.gif"
         gif_path = "template_doc/giphy_1.gif"
-        gif = Image.open(gif_path_joke)
+        gif = Image.open(gif_path)
 
         #découpage du gif , frame par frame 
         self.frames = [ImageTk.PhotoImage(frame) for frame in ImageSequence.Iterator(gif)]
@@ -553,6 +561,8 @@ class Logicielprincipal(tk.Frame) :
 
 
     def load_and_display_image(self,image_path,frame,resize,i) : #fonction pour charger les images dans un Frame pré-définit
+
+
         """
         Loads and displays an image in a specified frame.
 
@@ -565,6 +575,7 @@ class Logicielprincipal(tk.Frame) :
         Returns:
             None
         """
+        
         pil_image = Image.open(image_path) # on charge l'image
         if len(resize) != 0 : #on check si la liste resize est vite , si non , on resize avec x  et y 
             pil_image = pil_image.resize((resize[0],resize[1]),Image.LANCZOS)
@@ -579,7 +590,8 @@ class Logicielprincipal(tk.Frame) :
         label.image = tk_image # il faut conserver l'image pour qu'elle soit afficher 
         label.place(x=0,y=0)
         label.bind("<Button-1>",lambda event , f=frame : self.select_frame(f,label)) #lorsqu'on clique sur le frame , on a cette action
-    
+
+
 
     def select_frame(self,frame,label) : # fonction pour la sélection de Frame (couleur Rouge)
         """
@@ -662,12 +674,41 @@ class Logicielprincipal(tk.Frame) :
         self.simulate_chargement()
         
     def changement_image_genetic_autoencoder(self) :
-        print(" ici " , self.model)
-        if len(self.liste_frame[0]) > 1 : 
+
+
+        """
         
+        index_frame_list = []
+
+        for i in range (len(self.frame_select)) :   
+            
+                if len(str(self.frame_select[i])) == 15 : # on récupérer le nom du frame , dans ce frame on connait son numéro
+                    #Les frames dans tkinter sont numérotés selon leurs ordres de créations 
+                    #on a 4 frames crée avant donc je mets - 4 dans le nom des frames
+                    index_frame_list.append(int(str(self.frame_select[i])[7]) - 4) #La partie du string récupéré est le numéro du Frame selon le nom donné par Tkinter
+                    #exemple si on a Frame15 , alors on récupère le 15 puis on soustrait par 8 car 8 Frame ont été crées avant
+                    
+                else : 
+                    index_frame_list.append(int(str(self.frame_select[i])[7:9]) - 4 )# si on a Frame 15 , on doit récupérer le 1 et le 5 c'est pourquoi [7:9]
+                    #7 est la position initial du numéro dans le string 
+        victim_list = []
+        population_list = []
+        for item in index_frame_list : 
+            victim_list.append(self.liste_frame[item][1])
+        for item in self.liste_frame: 
+            population_list.append(item[1])
+       
+       
+        if len(self.liste_frame[0]) > 1 : 
             for item in self.liste_frame : 
                 item.pop(1)
-    
+
+        identify_attacker.init_genetic_algo(population_list,victim_list,self.model)
+        """
+        if len(self.liste_frame[0]) > 1 : 
+            for item in self.liste_frame : 
+                item.pop(1)
+        
         liste_path_test = []
         for i in range(16) : 
             liste_path_test.append(self.choice_path_image())
