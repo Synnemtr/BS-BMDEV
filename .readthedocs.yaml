@@ -3,7 +3,7 @@
 # Voir https://docs.readthedocs.io/en/stable/config-file/v2.html pour plus de détails
 
 # Requis
-version: 1
+version: 2
 
 # Définir le système d'exploitation, la version de Python et d'autres outils dont vous pourriez avoir besoin
 build:
