@@ -52,7 +52,7 @@ class Logicielprincipal(tk.Frame) :
             #copie du nom du modèle 
             selected_value = self.autoencoder_liste_box_A.selected_value
             self.genetic_value = self.liste_box_genetic.genetic_value
-            self.model = "graphique/model/" + str(selected_value)
+            self.model = "model/" + str(selected_value)
             print("ici 2: " , self.model)
             print("ici : " , self.genetic_value)
             self.nouvelle_fenetre.destroy()
@@ -74,7 +74,7 @@ class Logicielprincipal(tk.Frame) :
 
         #permet de charger l'image de fond du menu 
 
-        photo_background = Image.open("C:/Users/lukyl/Music/javascript/__pycache__/graphique/template_doc/Entry_Menu.png") # on ouvre l'image avec ¨PIL
+        photo_background = Image.open("template_doc/Entry_Menu.png") # on ouvre l'image avec ¨PIL
         photo_background = photo_background.resize((900,200) , Image.LANCZOS) # on resize l'image
         photo_background = ImageTk.PhotoImage(photo_background) # on l'a convertit en image tkinter
         Label_background = Label(nouvelle_fenetre_menu , image = photo_background)
@@ -96,10 +96,10 @@ class Logicielprincipal(tk.Frame) :
             self.master = master
             self.pack()
             self.create_widgets()
-            self.tutoriel_frame_liste = ["C:/Users/lukyl/OneDrive/Images/giphy.gif" , 
-                                         "C:/Users/lukyl/OneDrive/Images/giphy_1.gif",
-                                         "C:/Users/lukyl/OneDrive/Images/giphy.gif",
-                                         "C:/Users/lukyl/OneDrive/Images/giphy_1.gif",]
+            self.tutoriel_frame_liste = ["template_doc/giphy.gif" , 
+                                         "template_doc/giphy_1.gif",
+                                         "template_doc/giphy.gif",
+                                         "template_doc/giphy_1.gif",]
             self.index_tutoriel = 0
             
         def create_widgets(self) : 
@@ -226,7 +226,7 @@ class Logicielprincipal(tk.Frame) :
             liste_box_A_frame.place(x=200,y=230)
             self.list_box_A.place(x=200,y=235)
             #Le code ici permet de récupérer dans le dossier model , le nom des models
-            path_model = "C:/Users/lukyl/Music/javascript/__pycache__/graphique/model/"
+            path_model = "model/"
             if os.path.isdir(path_model) : 
                 models = os.listdir(path_model)
                 for i in range(len(models))  : 
@@ -298,7 +298,7 @@ class Logicielprincipal(tk.Frame) :
     def interface_object(self) : # Ceci est les composants de notre interface principal
         #préparation de l'image pour le background du logiciel 
         print("ici : " , self.model)
-        background_image_1 = Image.open("C:/Users/lukyl/OneDrive/Images/vector_background.jpg")
+        background_image_1 = Image.open("template_doc/vector_background.jpg")
         background_image_1 = background_image_1.resize((1200,800) , Image.LANCZOS)
         background_image_2 = ImageTk.PhotoImage(background_image_1)
         
@@ -321,7 +321,7 @@ class Logicielprincipal(tk.Frame) :
         frame_centre_ligne.place(x=350 , y = 300)
 
         #chargement de l'image de la flèche 
-        fleche_image = Image.open("C:/Users/lukyl/OneDrive/Images/fleche_bleu_t.png")
+        fleche_image = Image.open("template_doc/fleche_bleu_t.png")
         fleche_image_size = fleche_image.resize((200,95) , Image.LANCZOS)
         fleche_image_tk = ImageTk.PhotoImage(fleche_image_size)
 
@@ -480,8 +480,8 @@ class Logicielprincipal(tk.Frame) :
         label_spinbox.place(x = 500 , y = 200)
 
         #Choix du gif à faire apparaitre dans la barre loading
-        gif_path_joke = "C:/Users/lukyl/OneDrive/Images/giphy.gif"
-        gif_path = "C:/Users/lukyl/OneDrive/Images/giphy_1.gif"
+        gif_path_joke = "template_doc/giphy.gif"
+        gif_path = "template_doc/giphy_1.gif"
         gif = Image.open(gif_path_joke)
 
         #découpage du gif , frame par frame 
@@ -527,7 +527,7 @@ class Logicielprincipal(tk.Frame) :
         frame_2_complementaire = Frame(self.master, width = 100+HLT , height = 120+HLT)
         frame_2_complementaire.place ( x=620 , y = 40 )
 
-        frame_complementaire_path = "C:/Users/lukyl/Music/javascript/__pycache__/graphique/img_align_celeba/000001.jpg"
+        frame_complementaire_path = "data/img_align_celeba/img_align_celeba/000001.jpg"
         frame_complementaire_size = [100,120]
 
         self.load_image_from_autoencoder(frame_complementaire_path,frame_1_complementaire,frame_complementaire_size)
@@ -548,7 +548,7 @@ class Logicielprincipal(tk.Frame) :
         nombre_alea = str(random.randint(1,202599)) #choisi un nombre entre 1 et 200 000 
         while len(nombre_alea) < 6 : 
             nombre_alea = "0" + nombre_alea # si on a choisi 478 , il faut 3 zéros devant 478 pour le path de l'image 000478
-        random_image_path = "C:/Users/lukyl/Music/javascript/__pycache__/graphique/img_align_celeba/" + nombre_alea + ".jpg"
+        random_image_path = "data/img_align_celeba/img_align_celeba/" + nombre_alea + ".jpg"
         return random_image_path
 
 
