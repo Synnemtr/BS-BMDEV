@@ -10,6 +10,9 @@ import matplotlib.pyplot as plt
 import random
 from autoencoder import create_autoencoder, load_autoencoder_model, split_data, display_data_set, visualize_prediction, test_encoder_decoder, train_model
 from genetic_algorithm import genetic_algorithm_with_mse, genetic_algorithm_with_psnr, genetic_algorithm_with_ssim, plot_fitness_scores
+import tkinter as tk
+from ui import UserInterface
+
 
 chosen_images_history = [] # List to store the images chosen by the user
 
@@ -69,17 +72,47 @@ def population_initiation(batch, population_size):
 
     return init_population
 
+def identifying_loop(root, ui, encoder, decoder, population, population_size, max_iterations, mutation_rate):
+    for i in range(max_iterations):
+        # Checks the status of the choices_validated variable and if the window is still open
+        while ui.window_exists and not ui.choices_validated:
+            root.update_idletasks()
+            root.update()
+        if not ui.window_exists:
+            break
+        victim_choice = [ui.population[image_number - 1] for image_number in ui.user_choice]
+        encode_victim_choice = [encoder.predict(image.reshape(1, 128, 128, 3)) for image in victim_choice] #(batch size, height, width, channels)
+        encode_population = [np.asarray(encoder.predict(image.reshape(1, 128, 128, 3))) for image in population]
+        if i < max_iterations - 1:
+            new_population = genetic_algorithm(decoder, encode_population, encode_victim_choice, population_size, mutation_rate)
+            decoded_new_population = [decoder.predict(image[-1]) for image in new_population]
+            population = [image.reshape(128, 128, 3) for image in decoded_new_population]
+            ui.display_new_images(population)    
+        else:
+            new_population = genetic_algorithm(decoder, encode_population, encode_victim_choice, 1, mutation_rate)
+            decoded_new_population = [decoder.predict(image[-1]) for image in new_population]
+            population = [image.reshape(128, 128, 3) for image in decoded_new_population]
+            # new_population_if_continue = genetic_algorithm(decoder, encode_population, encode_victim_choice, population_size, mutation_rate)
+            # decoded_new_population_if_continue = [decoder.predict(image[-1]) for image in new_population_if_continue]
+            # population_if_continue = [image.reshape(160, 144, 3) for image in decoded_new_population_if_continue]
+
+        ui.end_screen(population) 
+
+# Identify the attacker using genetic algorithm and the autoencoder's encoder and decoder layer's
+def idenfity_attacker(autoencoder, encoder, decoder, batch, population_size, max_iterations, mutation_rate):
+    decoded_population = [autoencoder.predict(individual.reshape(1, 128, 128, 3)) for individual in population_initiation(batch, population_size)]  # init random population
+    population = [image.reshape(128, 128, 3) for image in decoded_population]
+    root = tk.Tk()
+    ui = UserInterface(root, population)
+    identifying_loop(root, ui, encoder, decoder, population, population_size, max_iterations, mutation_rate)
+    # while ui.window_exists and not ui.more_iterations:
+    #     root.update_idletasks()
+    #     root.update()
+    # if ui.more_iterations:
+    #     identifying_loop(root, ui, encoder, decoder, population, population_size, max_iterations, mutation_rate)
+
+# [temporary] get the user's choice of the image that most resembles the attacker
 def get_victim_choice(mutated_images, extra_images):
-    """
-    This function asks the user to choose the image(s) that most resemble the attacker. The user's choices are returned.
-
-    Parameters:
-        mutated_images (list): The list of mutated images.
-        extra_images (list): The list of extra images.
-
-    Returns:
-        list: The user's choices of images.
-    """
     global chosen_images_history
     combined_images = mutated_images + extra_images
     while True:
@@ -87,9 +120,6 @@ def get_victim_choice(mutated_images, extra_images):
         if choices.lower() == 'quit':
             print("Exiting...")
             return None
-
-        choices = [int(choice.strip()) - 1 for choice in choices.split(",")]
-
         choice = []
         for index in choices:
             try:
@@ -214,6 +244,9 @@ if __name__ == "__main__":
         file_name = input("Enter the model file name : ")
         autoencoder_loaded, encoder, decoder=load_autoencoder_model('model/' + file_name + '.keras')
         decoder.summary()
+        autoencoder_loaded.summary()
+
+        idenfity_attacker(autoencoder_loaded, encoder, decoder, train_data, population_size, max_iterations, mutation_rate)
         idenfity_attacker(autoencoder_loaded, encoder, decoder, image_width, image_height, image_channels, train_data, init_size, population_size, extra_images_generated, max_iterations, mutation_rate)
         # visualize_prediction(val_data[0][0], autoencoder_loaded, train=False, nbr_images_displayed=8)
         # test_encoder_decoder(val_data[0][0], encoder, decoder, 8)
