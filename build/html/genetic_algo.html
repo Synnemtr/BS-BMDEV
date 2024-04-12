@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Genetic algorithm &mdash; Software development project  documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+      <link rel="stylesheet" href="_static/fonts.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Identify attacker" href="identify_attacker.html" />
+    <link rel="prev" title="Autoencoder" href="autoencoder.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Software development project
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Installation tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="software_tutorial.html">Getting started with our Software</a></li>
+<li class="toctree-l1"><a class="reference internal" href="autoencoder.html">Autoencoder</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Genetic algorithm</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#genetic_algorithm.bit_flip_mutation"><code class="docutils literal notranslate"><span class="pre">bit_flip_mutation()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#genetic_algorithm.generate_new_population_psnr"><code class="docutils literal notranslate"><span class="pre">generate_new_population_psnr()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#genetic_algorithm.generate_new_population_ssim"><code class="docutils literal notranslate"><span class="pre">generate_new_population_ssim()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#genetic_algorithm.generate_new_population_with_elitism"><code class="docutils literal notranslate"><span class="pre">generate_new_population_with_elitism()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#genetic_algorithm.genetic_algorithm_with_mse"><code class="docutils literal notranslate"><span class="pre">genetic_algorithm_with_mse()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#genetic_algorithm.genetic_algorithm_with_psnr"><code class="docutils literal notranslate"><span class="pre">genetic_algorithm_with_psnr()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#genetic_algorithm.genetic_algorithm_with_ssim"><code class="docutils literal notranslate"><span class="pre">genetic_algorithm_with_ssim()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#genetic_algorithm.mse_fitness"><code class="docutils literal notranslate"><span class="pre">mse_fitness()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#genetic_algorithm.mse_fitness_evaluation"><code class="docutils literal notranslate"><span class="pre">mse_fitness_evaluation()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#genetic_algorithm.mutate_genome"><code class="docutils literal notranslate"><span class="pre">mutate_genome()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#genetic_algorithm.plot_fitness_scores"><code class="docutils literal notranslate"><span class="pre">plot_fitness_scores()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#genetic_algorithm.psnr_fitness"><code class="docutils literal notranslate"><span class="pre">psnr_fitness()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#genetic_algorithm.psnr_fitness_evaluation"><code class="docutils literal notranslate"><span class="pre">psnr_fitness_evaluation()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#genetic_algorithm.roulette_wheel_selection"><code class="docutils literal notranslate"><span class="pre">roulette_wheel_selection()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#genetic_algorithm.select_parents_high"><code class="docutils literal notranslate"><span class="pre">select_parents_high()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#genetic_algorithm.select_parents_low"><code class="docutils literal notranslate"><span class="pre">select_parents_low()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#genetic_algorithm.single_point_crossover"><code class="docutils literal notranslate"><span class="pre">single_point_crossover()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#genetic_algorithm.ssim_fitness"><code class="docutils literal notranslate"><span class="pre">ssim_fitness()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#genetic_algorithm.ssim_fitness_evaluation"><code class="docutils literal notranslate"><span class="pre">ssim_fitness_evaluation()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#genetic_algorithm.two_point_crossover"><code class="docutils literal notranslate"><span class="pre">two_point_crossover()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#genetic_algorithm.uniform_crossover"><code class="docutils literal notranslate"><span class="pre">uniform_crossover()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="identify_attacker.html">Identify attacker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ui.html">Graphical Interface</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Software development project</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Genetic algorithm</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/genetic_algo.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-genetic_algorithm">
+<span id="genetic-algorithm"></span><h1>Genetic algorithm<a class="headerlink" href="#module-genetic_algorithm" title="Link to this heading"></a></h1>
+<p>A module implementing a genetic algorithm for optimization problems.</p>
+<p>This module provides functions to perform genetic algorithm operations such as
+selection, mutation, crossover, and generating new populations.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="genetic_algorithm.bit_flip_mutation">
+<span class="sig-prename descclassname"><span class="pre">genetic_algorithm.</span></span><span class="sig-name descname"><span class="pre">bit_flip_mutation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">genome</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mutation_rate</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genetic_algorithm.bit_flip_mutation" title="Link to this definition"></a></dt>
+<dd><p>This function mutates a genome by flipping its bits.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>genome</strong> (<em>list</em>) – The genome to be mutated.</p></li>
+<li><p><strong>mutation_rate</strong> (<em>float</em>) – The rate at which the genome should be mutated.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The mutated genome.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="genetic_algorithm.generate_new_population_psnr">
+<span class="sig-prename descclassname"><span class="pre">genetic_algorithm.</span></span><span class="sig-name descname"><span class="pre">generate_new_population_psnr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parents</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">population_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mutation_rate</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genetic_algorithm.generate_new_population_psnr" title="Link to this definition"></a></dt>
+<dd><p>This function generates a new population from the parents using two-point crossover and bit flip mutation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>parents</strong> (<em>list</em>) – The parent genomes.</p></li>
+<li><p><strong>population_size</strong> (<em>int</em>) – The size of the population to be generated.</p></li>
+<li><p><strong>mutation_rate</strong> (<em>float</em>) – The rate at which the genomes should be mutated.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The new population.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="genetic_algorithm.generate_new_population_ssim">
+<span class="sig-prename descclassname"><span class="pre">genetic_algorithm.</span></span><span class="sig-name descname"><span class="pre">generate_new_population_ssim</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parents</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">population_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mutation_rate</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genetic_algorithm.generate_new_population_ssim" title="Link to this definition"></a></dt>
+<dd><p>This function generates a new population from the parents using uniform crossover and bit flip mutation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>parents</strong> (<em>list</em>) – The parent genomes.</p></li>
+<li><p><strong>population_size</strong> (<em>int</em>) – The size of the population to be generated.</p></li>
+<li><p><strong>mutation_rate</strong> (<em>float</em>) – The rate at which the genomes should be mutated.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The new population.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="genetic_algorithm.generate_new_population_with_elitism">
+<span class="sig-prename descclassname"><span class="pre">genetic_algorithm.</span></span><span class="sig-name descname"><span class="pre">generate_new_population_with_elitism</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parents</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">population_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mutation_rate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">elitism_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fitness_scores</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genetic_algorithm.generate_new_population_with_elitism" title="Link to this definition"></a></dt>
+<dd><p>This function generates a new population from the parents using single point crossover and normal mutation, and includes the best individuals from the previous generation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>parents</strong> (<em>list</em>) – The parent genomes.</p></li>
+<li><p><strong>population_size</strong> (<em>int</em>) – The size of the population to be generated.</p></li>
+<li><p><strong>mutation_rate</strong> (<em>float</em>) – The rate at which the genomes should be mutated.</p></li>
+<li><p><strong>elitism_size</strong> (<em>int</em>) – The number of best individuals from the previous generation to include in the new population.</p></li>
+<li><p><strong>fitness_scores</strong> (<em>list</em>) – The fitness scores of the current population.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The new population.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="genetic_algorithm.genetic_algorithm_with_mse">
+<span class="sig-prename descclassname"><span class="pre">genetic_algorithm.</span></span><span class="sig-name descname"><span class="pre">genetic_algorithm_with_mse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">population</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">victim_choice</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">population_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mutation_rate</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genetic_algorithm.genetic_algorithm_with_mse" title="Link to this definition"></a></dt>
+<dd><p>This function runs a genetic algorithm with Mean Squared Error (MSE) as the fitness function.
+Parent selection: Selects the best genomes based on the lowest fitness score
+Crossover: Single point crossover
+Mutation: Normal distribution
+New population generation: with elitism</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>population</strong> (<em>list</em>) – The current population of genomes.</p></li>
+<li><p><strong>victim_choice</strong> (<em>array</em>) – The victim choice.</p></li>
+<li><p><strong>population_size</strong> (<em>int</em>) – The size of the population.</p></li>
+<li><p><strong>mutation_rate</strong> (<em>float</em>) – The rate at which the genomes should be mutated.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The new population.
+float: The average fitness score of the new population.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="genetic_algorithm.genetic_algorithm_with_psnr">
+<span class="sig-prename descclassname"><span class="pre">genetic_algorithm.</span></span><span class="sig-name descname"><span class="pre">genetic_algorithm_with_psnr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">population</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">victim_choice</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">population_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mutation_rate</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genetic_algorithm.genetic_algorithm_with_psnr" title="Link to this definition"></a></dt>
+<dd><p>This function runs a genetic algorithm with Peak Signal-to-Noise Ratio (PSNR) as the fitness function.
+Parent selection: Selects the best genomes based on the highest fitness score
+Crossover: Two-point crossover
+Mutation: Bit flip mutation
+New population generation: without elitism</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>population</strong> (<em>list</em>) – The current population of genomes.</p></li>
+<li><p><strong>victim_choice</strong> (<em>array</em>) – The victim choice.</p></li>
+<li><p><strong>population_size</strong> (<em>int</em>) – The size of the population.</p></li>
+<li><p><strong>mutation_rate</strong> (<em>float</em>) – The rate at which the genomes should be mutated.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The new population.
+float: The average fitness score of the new population.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="genetic_algorithm.genetic_algorithm_with_ssim">
+<span class="sig-prename descclassname"><span class="pre">genetic_algorithm.</span></span><span class="sig-name descname"><span class="pre">genetic_algorithm_with_ssim</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">population</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">victim_choice</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">population_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mutation_rate</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genetic_algorithm.genetic_algorithm_with_ssim" title="Link to this definition"></a></dt>
+<dd><p>This function runs a genetic algorithm with Structural Similarity Index (SSIM) as the fitness function.
+Parent selection: Roulette wheel selection with probability based on fitness score
+Crossover: Uniform crossover
+Mutation: Bit flip mutation
+New population generation: without elitism</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>population</strong> (<em>list</em>) – The current population of genomes.</p></li>
+<li><p><strong>victim_choice</strong> (<em>array</em>) – The victim choice.</p></li>
+<li><p><strong>population_size</strong> (<em>int</em>) – The size of the population.</p></li>
+<li><p><strong>mutation_rate</strong> (<em>float</em>) – The rate at which the genomes should be mutated.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The new population.
+float: The average fitness score of the new population.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="genetic_algorithm.mse_fitness">
+<span class="sig-prename descclassname"><span class="pre">genetic_algorithm.</span></span><span class="sig-name descname"><span class="pre">mse_fitness</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">decoded_target_image</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">original_image</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genetic_algorithm.mse_fitness" title="Link to this definition"></a></dt>
+<dd><p>This function calculates the fitness of the decoded target image compared to the original image using Mean Squared Error (MSE).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>decoded_target_image</strong> (<em>array</em>) – The decoded target image.</p></li>
+<li><p><strong>original_image</strong> (<em>array</em>) – The original image.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The average fitness value of the decoded target image.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="genetic_algorithm.mse_fitness_evaluation">
+<span class="sig-prename descclassname"><span class="pre">genetic_algorithm.</span></span><span class="sig-name descname"><span class="pre">mse_fitness_evaluation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">population</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoded_target_images</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genetic_algorithm.mse_fitness_evaluation" title="Link to this definition"></a></dt>
+<dd><p>This function evaluates the fitness of the images in the population using mean squared error (MSE).
+A lower MSE value indicates a better fit</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>population</strong> (<em>list</em>) – The current population of genomes.</p></li>
+<li><p><strong>encoded_target_images</strong> (<em>list</em>) – The target images to compare the population to.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The fitness scores of the current population.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="genetic_algorithm.mutate_genome">
+<span class="sig-prename descclassname"><span class="pre">genetic_algorithm.</span></span><span class="sig-name descname"><span class="pre">mutate_genome</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">genome</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mutation_rate</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genetic_algorithm.mutate_genome" title="Link to this definition"></a></dt>
+<dd><p>This function mutates a genome by adding a random normal value to it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>genome</strong> (<em>list</em>) – The genome to be mutated.</p></li>
+<li><p><strong>mutation_rate</strong> (<em>float</em>) – The rate at which the genome should be mutated.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The mutated genome.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="genetic_algorithm.plot_fitness_scores">
+<span class="sig-prename descclassname"><span class="pre">genetic_algorithm.</span></span><span class="sig-name descname"><span class="pre">plot_fitness_scores</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fitness_scores</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genetic_algorithm.plot_fitness_scores" title="Link to this definition"></a></dt>
+<dd><p>This function plots the fitness scores over generations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>fitness_scores</strong> (<em>list</em>) – A list of fitness scores. Each score corresponds to a generation.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="genetic_algorithm.psnr_fitness">
+<span class="sig-prename descclassname"><span class="pre">genetic_algorithm.</span></span><span class="sig-name descname"><span class="pre">psnr_fitness</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">decoded_target_image</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">original_image</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genetic_algorithm.psnr_fitness" title="Link to this definition"></a></dt>
+<dd><p>This function calculates the fitness of the decoded target image compared to the original image using Peak Signal-to-Noise Ratio (PSNR).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>decoded_target_image</strong> (<em>array</em>) – The decoded target image.</p></li>
+<li><p><strong>original_image</strong> (<em>array</em>) – The original image.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The average fitness value of the decoded target image.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="genetic_algorithm.psnr_fitness_evaluation">
+<span class="sig-prename descclassname"><span class="pre">genetic_algorithm.</span></span><span class="sig-name descname"><span class="pre">psnr_fitness_evaluation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">population</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoded_target_images</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genetic_algorithm.psnr_fitness_evaluation" title="Link to this definition"></a></dt>
+<dd><p>This function evaluates the fitness of the images in the population using Peak Signal-to-Noise Ratio (PSNR).
+A higher PSNR value indicates a better fit.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>population</strong> (<em>list</em>) – The current population of genomes.</p></li>
+<li><p><strong>encoded_target_images</strong> (<em>list</em>) – The target images to compare the population to.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The fitness scores of the current population.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="genetic_algorithm.roulette_wheel_selection">
+<span class="sig-prename descclassname"><span class="pre">genetic_algorithm.</span></span><span class="sig-name descname"><span class="pre">roulette_wheel_selection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">population</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fitness_scores</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genetic_algorithm.roulette_wheel_selection" title="Link to this definition"></a></dt>
+<dd><p>This function selects the best half of the population based on roulette wheel selection.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>population</strong> (<em>list</em>) – The current population of genomes.</p></li>
+<li><p><strong>fitness_scores</strong> (<em>list</em>) – The fitness scores of the current population.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The selected half of the population based on roulette wheel selection.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="genetic_algorithm.select_parents_high">
+<span class="sig-prename descclassname"><span class="pre">genetic_algorithm.</span></span><span class="sig-name descname"><span class="pre">select_parents_high</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">population</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fitness_scores</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genetic_algorithm.select_parents_high" title="Link to this definition"></a></dt>
+<dd><p>This function selects the best half of the population based on the highest fitness scores.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>population</strong> (<em>list</em>) – The current population of genomes.</p></li>
+<li><p><strong>fitness_scores</strong> (<em>list</em>) – The fitness scores of the current population.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The selected half of the population with the highest fitness scores.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="genetic_algorithm.select_parents_low">
+<span class="sig-prename descclassname"><span class="pre">genetic_algorithm.</span></span><span class="sig-name descname"><span class="pre">select_parents_low</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">population</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fitness_scores</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genetic_algorithm.select_parents_low" title="Link to this definition"></a></dt>
+<dd><p>This function selects the best half of the population based on the lowest fitness scores.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>population</strong> (<em>list</em>) – The current population of genomes.</p></li>
+<li><p><strong>fitness_scores</strong> (<em>list</em>) – The fitness scores of the current population.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The selected half of the population with the lowest fitness scores.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="genetic_algorithm.single_point_crossover">
+<span class="sig-prename descclassname"><span class="pre">genetic_algorithm.</span></span><span class="sig-name descname"><span class="pre">single_point_crossover</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genetic_algorithm.single_point_crossover" title="Link to this definition"></a></dt>
+<dd><p>This function creates a new offspring by performing a single point crossover between two parents.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>parent1</strong> (<em>list</em>) – The first parent genome.</p></li>
+<li><p><strong>parent2</strong> (<em>list</em>) – The second parent genome.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The offspring genome.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="genetic_algorithm.ssim_fitness">
+<span class="sig-prename descclassname"><span class="pre">genetic_algorithm.</span></span><span class="sig-name descname"><span class="pre">ssim_fitness</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">decoded_target_image</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">original_image</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genetic_algorithm.ssim_fitness" title="Link to this definition"></a></dt>
+<dd><p>This function calculates the fitness of the decoded target image compared to the original image using Structural Similarity Index (SSIM).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>decoded_target_image</strong> (<em>array</em>) – The decoded target image.</p></li>
+<li><p><strong>original_image</strong> (<em>array</em>) – The original image.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The average fitness value of the decoded target image.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="genetic_algorithm.ssim_fitness_evaluation">
+<span class="sig-prename descclassname"><span class="pre">genetic_algorithm.</span></span><span class="sig-name descname"><span class="pre">ssim_fitness_evaluation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">population</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoded_target_images</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genetic_algorithm.ssim_fitness_evaluation" title="Link to this definition"></a></dt>
+<dd><p>This function evaluates the fitness of the images in the population using Structural Similarity Index (SSIM).
+A higher SSIM value indicates a better fit.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>population</strong> (<em>list</em>) – The current population of genomes.</p></li>
+<li><p><strong>encoded_target_images</strong> (<em>list</em>) – The target images to compare the population to.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The fitness scores of the current population.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="genetic_algorithm.two_point_crossover">
+<span class="sig-prename descclassname"><span class="pre">genetic_algorithm.</span></span><span class="sig-name descname"><span class="pre">two_point_crossover</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genetic_algorithm.two_point_crossover" title="Link to this definition"></a></dt>
+<dd><p>This function creates a new offspring by performing a two-point crossover between two parents.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>parent1</strong> (<em>list</em>) – The first parent genome.</p></li>
+<li><p><strong>parent2</strong> (<em>list</em>) – The second parent genome.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The offspring genome.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="genetic_algorithm.uniform_crossover">
+<span class="sig-prename descclassname"><span class="pre">genetic_algorithm.</span></span><span class="sig-name descname"><span class="pre">uniform_crossover</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genetic_algorithm.uniform_crossover" title="Link to this definition"></a></dt>
+<dd><p>This function creates a new offspring by performing a uniform crossover between two parents.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>parent1</strong> (<em>list</em>) – The first parent genome.</p></li>
+<li><p><strong>parent2</strong> (<em>list</em>) – The second parent genome.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The offspring genome.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="autoencoder.html" class="btn btn-neutral float-left" title="Autoencoder" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="identify_attacker.html" class="btn btn-neutral float-right" title="Identify attacker" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Laetitia Guérout, Théo Berthet, Lucas Bodelle &amp; Synne Trettenes.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
