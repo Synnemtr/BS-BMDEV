@@ -6,4 +6,3 @@ tensorflow==2.13.1
 pillow==10.2.0
 scipy==1.10.0
 scikit-image==0.21.0
-renku-sphinx-theme
