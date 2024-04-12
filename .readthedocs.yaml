@@ -17,7 +17,7 @@ build:
 
 # Générer la documentation dans le répertoire "docs/" avec Sphinx
 sphinx:
-  configuration: docs/conf.py
+  configuration: source/conf.py
 
 # Facultatif mais recommandé, déclarez les exigences Python nécessaires
 # pour construire votre documentation
