@@ -98,7 +98,7 @@ def display_image_vectors(images):
         print(img)
 
 # Identify the attacker using genetic algorithm and the autoencoder's encoder and decoder layer's
-def idenfity_attacker(autoencoder, encoder, decoder, image_width, image_height, image_channels, batch, init_size, population_size, extra_generating, max_iterations, mutation_rate,victim_choice):
+def idenfity_attacker(autoencoder, encoder, decoder, image_width, image_height, image_channels, batch, init_size, population_size, extra_generating, max_iterations, mutation_rate):
     population = population_initiation(batch, init_size)  # init random population
     average_fitness_scores_over_generations = []
 
@@ -112,7 +112,7 @@ def idenfity_attacker(autoencoder, encoder, decoder, image_width, image_height, 
     for i in range(max_iterations):
         extra_features = population_initiation(batch, extra_generating)
 
-        #victim_choice = get_victim_choice(population, extra_features)
+        victim_choice = get_victim_choice(population, extra_features)
 
         encode_victim_choice = [encoder.predict(image.reshape(1, image_width, image_height, image_channels)) for image in victim_choice] #(batch size, height, width, channels)
         
@@ -161,22 +161,18 @@ if __name__ == "__main__":
     image_width = 128
     image_height = 128
     image_channels = 3
-    print("passe ici")
 
     
 
-    print("Proceed to split data :")
+
     folder="./data/img_align_celeba"
     train_data, val_data=split_data(folder, seed_nb=40, image_size=(image_width,image_height), batch_size=128)
 
-    print("IIIICCCCCCIIIIIIIIIIII")
-
-    print(type(train_data))
-
-    # print("Test images loaded in train data : ")
-    # display_data_set(train_data, population_size)
-    # print("Test images loaded in val data : ")
-    # display_data_set(val_data, population_size)
+ 
+    #  print("Test images loaded in train data : ")
+    #  display_data_set(train_data, population_size)
+    #  print("Test images loaded in val data : ")
+    #  display_data_set(val_data, population_size)
 
     """
     train_or_not=input("Do you want to train a model [y/n] : ")
