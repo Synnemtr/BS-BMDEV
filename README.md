@@ -2,11 +2,29 @@
 
 ## How to run the project
 
+### Download from Github
+
+In the terminal : `git clone https://github.com/Synnemtr/BS-BMDEV.git`
+
+
+#### Launch the software using Docker
+
+To launch the software using Docker, you need to have Docker Desktop installed on your computer.
+
+#### On MacOS
+
+
 Open Docker Desktop on your computer. In the Dockerfile in this directory, put the name of the file that should be run when using the `./run.sh` command.
 
 Make `run.sh` executable: `chmod +x run.sh`
 
 Run `./run.sh`
+
+#### On Windows
+
+Open Docker Desktop on your computer.
+
+Run `bash run.sh`
 
 ## Identification software
 identify_attacker.py is a program that uses a combination of an autoencoder and a genetic algorithm to identify an "attacker" image from a set of images.

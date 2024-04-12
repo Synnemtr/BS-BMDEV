@@ -44,7 +44,7 @@ Still in the software folder, you can then launch the software by running :
 Download from PyPI
 ------------------
 
-The PyPI module is not working yet due to issues related to the weights of the project.
+**The PyPI module is not working yet due to issues related to the weight of the project.**
 
 In the terminal : ``pip install software_development_project_team1`` or to install it in a specific directory ``pip install software_development_project_team1``
 
