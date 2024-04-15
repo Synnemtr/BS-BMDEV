@@ -79,11 +79,18 @@ Each of these algorithms can be used depending on the specific requirements of y
 
 ## Requirements
 numpy = 1.24.0
+
 matplotlib = 3.7.5
+
 pandas = 1.4.4
+
 keras = 2.13.1
+
 tensorflow = 2.13.1
+
 pillow = 10.2.0
+
 scipy = 1.10.0
+
 scikit-image = 0.21.0
 
